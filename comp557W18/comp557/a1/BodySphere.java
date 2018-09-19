@@ -35,11 +35,13 @@ public class BodySphere extends DAGNode{
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
-		gl.glTranslated(tx.getValue(), ty.getValue(), tz.getValue());
+		gl.glPushMatrix();
 		gl.glScaled(sx.getValue(), sy.getValue(), sz.getValue());
+		gl.glTranslated(tx.getValue(), ty.getValue(), tz.getValue());
 		gl.glColor3d(cr.getValue(), cg.getValue(), cb.getValue());
 		glut.glutSolidSphere(1,300,300);
 		super.display(drawable);
+		gl.glPopMatrix();	
 	}
 
 	public void setCentre(Tuple3d t) {

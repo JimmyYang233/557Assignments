@@ -23,9 +23,9 @@ public class BodyBox extends DAGNode{
 		dofs.add( tx = new DoubleParameter( name+" tx", 0, -2, 2 ) );		
 		dofs.add( ty = new DoubleParameter( name+" ty", 0, -2, 2 ) );
 		dofs.add( tz = new DoubleParameter( name+" tz", 0, -2, 2 ) );
-		dofs.add( sx = new DoubleParameter( name+" sx", 0, 0, 5 ) );		
-		dofs.add( sy = new DoubleParameter( name+" sy", 0, 0, 5 ) );
-		dofs.add( sz = new DoubleParameter( name+" sz", 0, 0, 5 ) );
+		dofs.add( sx = new DoubleParameter( name+" sx", 0, 0, 4 ) );		
+		dofs.add( sy = new DoubleParameter( name+" sy", 0, 0, 4 ) );
+		dofs.add( sz = new DoubleParameter( name+" sz", 0, 0, 4 ) );
 		dofs.add( cr = new DoubleParameter( name+" cr", 0, 0, 255 ) );		
 		dofs.add( cg = new DoubleParameter( name+" cg", 0, 0, 255 ) );
 		dofs.add( cb = new DoubleParameter( name+" cb", 0, 0, 255 ) );
@@ -34,10 +34,12 @@ public class BodyBox extends DAGNode{
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
-		gl.glTranslated(tx.getValue(), ty.getValue(), tz.getValue());
+		gl.glPushMatrix();
 		gl.glScaled(sx.getValue(), sy.getValue(), sz.getValue());
+		gl.glTranslated(tx.getValue(), ty.getValue(), tz.getValue());
 		gl.glColor3d(cr.getValue(), cg.getValue(), cb.getValue());
 		glut.glutWireCube(1);
+		gl.glPopMatrix();
 		super.display(drawable);
 	}
 	
