@@ -2,6 +2,7 @@ package comp557.a1;
 
 import javax.vecmath.Tuple3d;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.jogamp.opengl.GL2;
@@ -20,9 +21,9 @@ public class FreeJoint extends DAGNode {
 		
 	public FreeJoint( String name ) {
 		super(name);
-		dofs.add( tx = new DoubleParameter( name+" tx", 0, -4, 4 ) );		
-		dofs.add( ty = new DoubleParameter( name+" ty", 0, -4, 4 ) );
-		dofs.add( tz = new DoubleParameter( name+" tz", 0, -4, 4 ) );
+		dofs.add( tx = new DoubleParameter( name+" tx", 0, -20, 20 ) );		
+		dofs.add( ty = new DoubleParameter( name+" ty", 0, -20, 20 ) );
+		dofs.add( tz = new DoubleParameter( name+" tz", 0, -20, 20 ) );
 		dofs.add( rx = new DoubleParameter( name+" rx", 0, -180, 180 ) );		
 		dofs.add( ry = new DoubleParameter( name+" ry", 0, -180, 180 ) );
 		dofs.add( rz = new DoubleParameter( name+" rz", 0, -180, 180 ) );
@@ -56,10 +57,13 @@ public class FreeJoint extends DAGNode {
 		
 	}
 	
-	public void setElement(Element element) {
+	public Element setElement(Document doc, Element parent) {
+		Element element = doc.createElement("node");
 		element.setAttribute("type", "freejoint");
 		element.setAttribute("name", name);
 		element.setAttribute("position", tx.getDefaultValue() + " " + ty.getDefaultValue()+ " " + tz.getDefaultValue());
+		parent.appendChild(element);
+		return element;
 	}
 	
 }

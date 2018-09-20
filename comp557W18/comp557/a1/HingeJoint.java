@@ -3,6 +3,7 @@ package comp557.a1;
 import javax.vecmath.Tuple2d;
 import javax.vecmath.Tuple3d;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.jogamp.opengl.GL2;
@@ -58,7 +59,14 @@ public class HingeJoint extends DAGNode{
 		
 	}
 	
-	public void setElement(Element element) {
-		
+	public Element setElement(Document doc, Element parent) {
+		Element element = doc.createElement("node");
+		element.setAttribute("type", "hingejoint");
+		element.setAttribute("name", name);
+		element.setAttribute("position", tx + " " + ty + " " + tz);
+		element.setAttribute("limitx", rx.getMinimum() + " " + rx.getMaximum() + " 0");
+		element.setAttribute("axis", rx.getDefaultValue() + " 0 0");
+		parent.appendChild(element);
+		return element;
 	}
 }

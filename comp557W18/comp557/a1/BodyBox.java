@@ -88,5 +88,7 @@ public class BodyBox extends DAGNode{
 		element.setAttribute("position", tx + " " + ty + " " + tz);
 		element.setAttribute("scale",  sx + " " + sy + " " + sz);
 		element.setAttribute("color", cr + " " + cg + " " + cb);
+		parent.appendChild(element);
+		return element;
 	}
 }
