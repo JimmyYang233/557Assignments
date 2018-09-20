@@ -81,24 +81,24 @@ public class Parser {
 			System.out.println(t.x +"," + t.y + "," + t.z);
 			joint.setPosition(t);
 			return joint;
-		} else if ( type.equals("ballxyz") ) {
-//			// position is optional (ignored if missing) but should probably be a required attribute!  
-//			// Could add optional attributes for limits (to all joints)
-//
-//			BallJoint joint = new BallJoint( name );
-//			if ( (t=getTuple3dAttr(dataNode,"position")) != null ) joint.setPosition( t );			
-//			return joint;
-			return null;
+		} else if ( type.equals("balljoint") ) {
+			// position is optional (ignored if missing) but should probably be a required attribute!  
+			// Could add optional attributes for limits (to all joints)
+
+			BallJoint joint = new BallJoint( name, getTuple3dAttr(dataNode,"limitx"), getTuple3dAttr(dataNode,"limity"), getTuple3dAttr(dataNode,"limitz"));
+			if ( (t=getTuple3dAttr(dataNode,"position")) != null ) joint.setPosition( t );
+			if ( (t=getTuple3dAttr(dataNode,"axis")) != null )joint.setAxis( getTuple3dAttr(dataNode,"axis") );
+						
+			return joint;
 			
-		} else if ( type.equals("hinge") ) {
-//			// position and axis are required... passing null to set methods
-//			// likely to cause an expection (perhaps OK)
-//			
-//			HingeJoint joint = new HingeJoint( name );
-//			joint.setPosition( getTuple3dAttr(dataNode,"position") );
-//			joint.setAxis( getTuple3dAttr(dataNode,"axis") );
-//			return joint;
-			return null;
+		} else if ( type.equals("hingejoint") ) {
+			// position and axis are required... passing null to set methods
+			// likely to cause an expection (perhaps OK)
+			
+			HingeJoint joint = new HingeJoint( name, getTuple3dAttr(dataNode, "limitx"));
+			if ( (t=getTuple3dAttr(dataNode,"position")) != null ) joint.setPosition( t );
+			if ( (t=getTuple3dAttr(dataNode,"axis")) != null )joint.setAxis( getTuple3dAttr(dataNode,"axis") );
+			return joint;
 			
 		}
 		return null;
@@ -113,16 +113,15 @@ public class Parser {
 		String type = dataNode.getAttributes().getNamedItem("type").getNodeValue();
 		String name = dataNode.getAttributes().getNamedItem("name").getNodeValue();
 		Tuple3d t;
-		if ( type.equals("box" ) ) {
-//			BodyBox geom = new BodyBox( name );
-//			if ( (t=getTuple3dAttr(dataNode,"center")) != null ) geom.setCentre( t );
-//			if ( (t=getTuple3dAttr(dataNode,"scale")) != null ) geom.setScale( t );
-//			if ( (t=getTuple3dAttr(dataNode,"color")) != null ) geom.setColor( t );
-//			return geom;
-			return null;
-		} else if ( type.equals( "sphere" )) {
+		if ( type.equals("bodybox" ) ) {
+			BodyBox geom = new BodyBox( name );
+			if ( (t=getTuple3dAttr(dataNode,"position")) != null ) geom.setCentre( t );
+			if ( (t=getTuple3dAttr(dataNode,"scale")) != null ) geom.setScale( t );
+			if ( (t=getTuple3dAttr(dataNode,"color")) != null ) geom.setColor( t );
+			return geom;
+		} else if ( type.equals( "bodysphere" )) {
 			BodySphere geom = new BodySphere( name );				
-			if ( (t=getTuple3dAttr(dataNode,"center")) != null ) geom.setCentre( t );
+			if ( (t=getTuple3dAttr(dataNode,"position")) != null ) geom.setCentre( t );
 			if ( (t=getTuple3dAttr(dataNode,"scale")) != null ) geom.setScale( t );
 			if ( (t=getTuple3dAttr(dataNode,"color")) != null ) geom.setColor( t );
 			return geom;	

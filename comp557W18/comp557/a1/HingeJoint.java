@@ -1,5 +1,6 @@
 package comp557.a1;
 
+import javax.vecmath.Tuple2d;
 import javax.vecmath.Tuple3d;
 
 import com.jogamp.opengl.GL2;
@@ -10,24 +11,32 @@ import mintools.parameters.DoubleParameter;
 public class HingeJoint extends DAGNode{
 
 
-	DoubleParameter tx;
-	DoubleParameter ty;
-	DoubleParameter tz;
+	Double tx;
+	Double ty;
+	Double tz;
 	DoubleParameter rx;
 		
 	public HingeJoint( String name , double angleMin, double angleMax) {
 		super(name);
-		dofs.add( tx = new DoubleParameter( name+" tx", 0, -4, 4 ) );		
-		dofs.add( ty = new DoubleParameter( name+" ty", 0, -4, 4 ) );
-		dofs.add( tz = new DoubleParameter( name+" tz", 0, -4, 4 ) );
+		tx = 0.0;
+		ty = 0.0;
+		tz = 0.0;
 		dofs.add( rx = new DoubleParameter( name+" rx", 0, angleMin, angleMax) );		
+	}
+	
+	public HingeJoint( String name , Tuple3d t) {
+		super(name);
+		tx = 0.0;
+		ty = 0.0;
+		tz = 0.0;
+		dofs.add( rx = new DoubleParameter( name+" rx", 0, t.x, t.y) );		
 	}
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glPushMatrix();
-		gl.glTranslated(tx.getValue(), ty.getValue(), tz.getValue());
+		gl.glTranslated(tx, ty, tz);
 		gl.glRotated(rx.getValue(), 1, 0, 0);
 		super.display(drawable);
 		gl.glPopMatrix();
@@ -36,9 +45,9 @@ public class HingeJoint extends DAGNode{
 	}
 
 	public void setPosition(Tuple3d tuple3dAttr) {
-		tx.setDefaultValue(tuple3dAttr.x);
-		ty.setDefaultValue(tuple3dAttr.y);
-		tz.setDefaultValue(tuple3dAttr.z);
+		tx = tuple3dAttr.x;
+		ty = tuple3dAttr.y;
+		tz = tuple3dAttr.z;
 		
 	}
 

@@ -12,28 +12,38 @@ public class BallJoint extends DAGNode {
 	DoubleParameter firstAngle;
 	DoubleParameter secondAngle;
 	
-	DoubleParameter tx;
-	DoubleParameter ty;
-	DoubleParameter tz;
+	Double tx;
+	Double ty;
+	Double tz;
 	DoubleParameter rx;
 	DoubleParameter ry;
 	DoubleParameter rz;
 		
 	public BallJoint( String name, double firstAngleMin, double firstAngleMax, double secondAngleMin, double secondAngleMax , double thirdAngleMin, double thirdAngleMax) {
 		super(name);
-		dofs.add( tx = new DoubleParameter( name+" tx", 0, -4, 4 ) );		
-		dofs.add( ty = new DoubleParameter( name+" ty", 0, -4, 4 ) );
-		dofs.add( tz = new DoubleParameter( name+" tz", 0, -4, 4 ) );
+		tx = 0.0;
+		ty = 0.0;
+		tz = 0.0;
 		dofs.add( rx = new DoubleParameter( name+" rx", 0, firstAngleMin, firstAngleMax ) );		
 		dofs.add( ry = new DoubleParameter( name+" ry", 0, secondAngleMin, secondAngleMax ) );
 		dofs.add( rz = new DoubleParameter( name+" rz", 0, thirdAngleMin, thirdAngleMax ) );
+	}
+	
+	public BallJoint( String name, Tuple3d xx, Tuple3d yy, Tuple3d zz) {
+		super(name);
+		tx = 0.0;
+		ty = 0.0;
+		tz = 0.0;
+		dofs.add( rx = new DoubleParameter( name+" rx", 0, xx.x, xx.y ) );		
+		dofs.add( ry = new DoubleParameter( name+" ry", 0, yy.x, yy.y ) );
+		dofs.add( rz = new DoubleParameter( name+" rz", 0, zz.x, zz.y ) );
 	}
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glPushMatrix();
-		gl.glTranslated(tx.getValue(), ty.getValue(), tz.getValue());
+		gl.glTranslated(tx, ty, tz);
 		gl.glRotated(rx.getValue(), 1, 0, 0);
 		gl.glRotated(ry.getValue(), 0, 1, 0);
 		gl.glRotated(rz.getValue(), 0, 0, 1);
@@ -44,9 +54,9 @@ public class BallJoint extends DAGNode {
 	}
 
 	public void setPosition(Tuple3d tuple3dAttr) {
-		tx.setDefaultValue(tuple3dAttr.x);
-		ty.setDefaultValue(tuple3dAttr.y);
-		tz.setDefaultValue(tuple3dAttr.z);
+		tx = tuple3dAttr.x;
+		ty = tuple3dAttr.y;
+		tz = tuple3dAttr.z;
 		
 	}
 

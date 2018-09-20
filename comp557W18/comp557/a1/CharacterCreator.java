@@ -57,6 +57,7 @@ public class CharacterCreator {
 				
 				Element rootdoc = doc.createElement("doc");
 				doc.appendChild(rootdoc);
+				
 				//root
 				Element rootElement = doc.createElement("node");
 				rootElement.setAttribute("type", "freejoint");
@@ -64,11 +65,83 @@ public class CharacterCreator {
 				rootElement.setAttribute("position", "0 4 -4");
 				rootdoc.appendChild(rootElement);
 				
+				//upperBody
+				Element upperBody = doc.createElement("geom");
+				upperBody.setAttribute("type", "bodybox");
+				upperBody.setAttribute("name", "upperbody");
+				upperBody.setAttribute("scale", "4 4 2");
+				upperBody.setAttribute("color", "255 255 0");
+				rootElement.appendChild(upperBody);
+				
+				//bodyJoint
+				Element bodyJoint = doc.createElement("node");
+				bodyJoint.setAttribute("type", "hingejoint");
+				bodyJoint.setAttribute("name", "bodyjoint");
+				bodyJoint.setAttribute("position", "0 -2 0");
+				bodyJoint.setAttribute("limitx", "-50 50 0");
+				upperBody.appendChild(bodyJoint);
+				
+				//lowerBody
+				Element lowerBody = doc.createElement("geom");
+				lowerBody.setAttribute("type", "bodybox");
+				lowerBody.setAttribute("name", "lowerbody");
+				lowerBody.setAttribute("position", "0 -0.5 0");
+				lowerBody.setAttribute("scale", "4 2 2");
+				lowerBody.setAttribute("color", "255 255 0");
+				bodyJoint.appendChild(lowerBody);	
+				
+				//lowerNeckJoint
+				Element lowerNeckJoint = doc.createElement("node");
+				lowerNeckJoint.setAttribute("type", "balljoint");
+				lowerNeckJoint.setAttribute("name", "lowerneckjoint");
+				lowerNeckJoint.setAttribute("position", "0 2 0");
+				lowerNeckJoint.setAttribute("limitx", "-80 70 0");
+				lowerNeckJoint.setAttribute("limity", "-120 120 0");
+				lowerNeckJoint.setAttribute("limitz", "-80 80 0");
+				upperBody.appendChild(lowerNeckJoint);
+				
+				//neck
+				Element neck = doc.createElement("geom");
+				neck.setAttribute("type", "bodybox");
+				neck.setAttribute("name", "neck");
+				neck.setAttribute("position", "0 0.5 0");
+				neck.setAttribute("scale", "1 1 1");
+				neck.setAttribute("color", "255 255 0");
+				lowerNeckJoint.appendChild(neck);
+				
+				//head
+				Element head = doc.createElement("geom");
+				head.setAttribute("type", "bodysphere");
+				head.setAttribute("name", "head");
+				head.setAttribute("position", "0 1.5 0");
+				head.setAttribute("scale", "1.5 1.5 1.5");
+				head.setAttribute("color", "255 255 0");
+				neck.appendChild(head);
+				
+				//rightShoulderJoint
+				Element rightShoulderJoint = doc.createElement("node");
+				rightShoulderJoint.setAttribute("type", "balljoint");
+				rightShoulderJoint.setAttribute("name", "rightshoulderjoint");
+				rightShoulderJoint.setAttribute("limitx", "-180 100 0");
+				rightShoulderJoint.setAttribute("limity", "-90 90 0");
+				rightShoulderJoint.setAttribute("limitz", "-180 0 0 ");
+				rightShoulderJoint.setAttribute("position", "-2 2 0");
+				rightShoulderJoint.setAttribute("axis", "0 0 -100");
+				upperBody.appendChild(rightShoulderJoint);
+				
+				//rightUpperArm
+				Element rightUpperArm = doc.createElement("geom");
+				rightUpperArm.setAttribute("type", "bodybox");
+				rightUpperArm.setAttribute("name", "rightupperarm");
+				rightUpperArm.setAttribute("position", "-0.5 -0.5 0");
+				rightUpperArm.setAttribute("scale", "1 3.5 1");
+				rightUpperArm.setAttribute("color", "255 255 0");
+				rightShoulderJoint.appendChild(rightUpperArm);
+				
 				TransformerFactory transformerFactory = TransformerFactory.newInstance();
 				Transformer transformer = transformerFactory.newTransformer();
 				DOMSource source = new DOMSource(doc);
-				StreamResult result = new StreamResult(new File( baseFileName.getText() + ".xml"));
-				//StreamResult result = new StreamResult(System.out);
+				StreamResult result = new StreamResult(new File( baseFileName.getText() + ".xml")); 
 
 				// Output to console for testing
 				// StreamResult result = new StreamResult(System.out);
@@ -91,44 +164,44 @@ public class CharacterCreator {
 		} else {
 			FreeJoint myCharacter = new FreeJoint("Character");
 			myCharacter.setPosition(new Point3d(0,4,-4));
-			
+			//
 			BodyBox upperBody = new BodyBox("UpperBody",0,0,0,4,4,2);
 			upperBody.setColor(new Point3d(255,0,0));
 			myCharacter.add(upperBody);
-			
+			//
 			HingeJoint bodyJoint = new HingeJoint("BodyJoint", -50, 50);
 			bodyJoint.setPosition(new Point3d(0,-2,0));
 			upperBody.add(bodyJoint);
-			
+			//
 			BodyBox lowerBody = new BodyBox("LowerBody",0,-0.5,0,4,2,2);
 			lowerBody.setColor(new Point3d(255,0,0));
 			bodyJoint.add(lowerBody);
-			
+			//
 			BallJoint lowerNeckJoint = new BallJoint("lowerNeckJoint", -80, 70, -120, 120, -80, 80);
 			lowerNeckJoint.setPosition(new Point3d(0,2,0));
 			upperBody.add(lowerNeckJoint);
-			
+			//
 			BodyBox neck = new BodyBox("Neck",0,0.5,0,1,1,1) {{
 				setColor(new Point3d(255,0,0));
 			}};
 			lowerNeckJoint.add(neck);
-			
+			//
 			BodySphere head = new BodySphere("Head"){{
 				setScale(new Point3d(1.5,1.5,1.5));
 				setCentre(new Point3d(0,1.5,0));
 				setColor(new Point3d(255,0,0));
 			}};
 			neck.add(head);
-			
+			//
 			BallJoint rightShoulderJoint = new BallJoint("rightShouldJoint", -180, 100,-90,90,-180,0);
 			rightShoulderJoint.setPosition(new Point3d(-2,2,0));
 			rightShoulderJoint.setAxis(new Point3d(0,0,-100));
 			upperBody.add(rightShoulderJoint);
-			
+			//
 			BodyBox rightUpperArm = new BodyBox("rightUpperArm",-0.5,-0.5,0,1,3.5,1);
 			rightUpperArm.setColor(new Point3d(255,0,0));
 			rightShoulderJoint.add(rightUpperArm);
-			
+			//
 			HingeJoint rightElbow = new HingeJoint("rightElbow", -160, 0);
 			rightElbow.setPosition(new Point3d(-0.5,-3.5,0));
 			rightUpperArm.add(rightElbow);
