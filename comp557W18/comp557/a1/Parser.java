@@ -41,12 +41,15 @@ public class Parser {
 	public static DAGNode createScene( DAGNode parent, Node dataNode ) {
         NodeList nodeList = dataNode.getChildNodes();
         for ( int i = 0; i < nodeList.getLength(); i++ ) {
+        	System.out.println(i);
             Node n = nodeList.item(i);
             // skip all text, just process the ELEMENT_NODEs
+            
             if ( n.getNodeType() != Node.ELEMENT_NODE ) continue;
             String nodeName = n.getNodeName();
             DAGNode dagNode = null;
             if ( nodeName.equalsIgnoreCase( "node" ) ) {
+            	
             	dagNode = Parser.createJoint( n );
             } else if ( nodeName.equalsIgnoreCase( "geom" ) ) {        		
         		dagNode = Parser.createGeom( n ) ;            
@@ -74,23 +77,28 @@ public class Parser {
 		Tuple3d t;
 		if ( type.equals("freejoint") ) {
 			FreeJoint joint = new FreeJoint( name );
+			t = getTuple3dAttr(dataNode, "position");
+			System.out.println(t.x +"," + t.y + "," + t.z);
+			joint.setPosition(t);
 			return joint;
 		} else if ( type.equals("ballxyz") ) {
-			// position is optional (ignored if missing) but should probably be a required attribute!  
-			// Could add optional attributes for limits (to all joints)
-
-			BallJoint joint = new BallJoint( name );
-			if ( (t=getTuple3dAttr(dataNode,"position")) != null ) joint.setPosition( t );			
-			return joint;
+//			// position is optional (ignored if missing) but should probably be a required attribute!  
+//			// Could add optional attributes for limits (to all joints)
+//
+//			BallJoint joint = new BallJoint( name );
+//			if ( (t=getTuple3dAttr(dataNode,"position")) != null ) joint.setPosition( t );			
+//			return joint;
+			return null;
 			
 		} else if ( type.equals("hinge") ) {
-			// position and axis are required... passing null to set methods
-			// likely to cause an expection (perhaps OK)
-			
-			HingeJoint joint = new HingeJoint( name );
-			joint.setPosition( getTuple3dAttr(dataNode,"position") );
-			joint.setAxis( getTuple3dAttr(dataNode,"axis") );
-			return joint;
+//			// position and axis are required... passing null to set methods
+//			// likely to cause an expection (perhaps OK)
+//			
+//			HingeJoint joint = new HingeJoint( name );
+//			joint.setPosition( getTuple3dAttr(dataNode,"position") );
+//			joint.setAxis( getTuple3dAttr(dataNode,"axis") );
+//			return joint;
+			return null;
 			
 		}
 		return null;
@@ -106,11 +114,12 @@ public class Parser {
 		String name = dataNode.getAttributes().getNamedItem("name").getNodeValue();
 		Tuple3d t;
 		if ( type.equals("box" ) ) {
-			BodyBox geom = new BodyBox( name );
-			if ( (t=getTuple3dAttr(dataNode,"center")) != null ) geom.setCentre( t );
-			if ( (t=getTuple3dAttr(dataNode,"scale")) != null ) geom.setScale( t );
-			if ( (t=getTuple3dAttr(dataNode,"color")) != null ) geom.setColor( t );
-			return geom;
+//			BodyBox geom = new BodyBox( name );
+//			if ( (t=getTuple3dAttr(dataNode,"center")) != null ) geom.setCentre( t );
+//			if ( (t=getTuple3dAttr(dataNode,"scale")) != null ) geom.setScale( t );
+//			if ( (t=getTuple3dAttr(dataNode,"color")) != null ) geom.setColor( t );
+//			return geom;
+			return null;
 		} else if ( type.equals( "sphere" )) {
 			BodySphere geom = new BodySphere( name );				
 			if ( (t=getTuple3dAttr(dataNode,"center")) != null ) geom.setCentre( t );

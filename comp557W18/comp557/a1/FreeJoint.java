@@ -18,9 +18,9 @@ public class FreeJoint extends DAGNode {
 		
 	public FreeJoint( String name ) {
 		super(name);
-		dofs.add( tx = new DoubleParameter( name+" tx", 0, -2, 2 ) );		
-		dofs.add( ty = new DoubleParameter( name+" ty", 0, -2, 2 ) );
-		dofs.add( tz = new DoubleParameter( name+" tz", 0, -2, 2 ) );
+		dofs.add( tx = new DoubleParameter( name+" tx", 0, -4, 4 ) );		
+		dofs.add( ty = new DoubleParameter( name+" ty", 0, -4, 4 ) );
+		dofs.add( tz = new DoubleParameter( name+" tz", 0, -4, 4 ) );
 		dofs.add( rx = new DoubleParameter( name+" rx", 0, -180, 180 ) );		
 		dofs.add( ry = new DoubleParameter( name+" ry", 0, -180, 180 ) );
 		dofs.add( rz = new DoubleParameter( name+" rz", 0, -180, 180 ) );

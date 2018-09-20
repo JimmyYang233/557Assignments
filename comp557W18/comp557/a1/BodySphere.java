@@ -21,9 +21,9 @@ public class BodySphere extends DAGNode{
 		
 	public BodySphere( String name ) {
 		super(name);
-		dofs.add( tx = new DoubleParameter( name+" tx", 0, -2, 2 ) );		
-		dofs.add( ty = new DoubleParameter( name+" ty", 0, -2, 2 ) );
-		dofs.add( tz = new DoubleParameter( name+" tz", 0, -2, 2 ) );
+		dofs.add( tx = new DoubleParameter( name+" tx", 0, -4, 4 ) );		
+		dofs.add( ty = new DoubleParameter( name+" ty", 0, -4, 4 ) );
+		dofs.add( tz = new DoubleParameter( name+" tz", 0, -4, 4 ) );
 		dofs.add( sx = new DoubleParameter( name+" sx", 0, 0, 5 ) );		
 		dofs.add( sy = new DoubleParameter( name+" sy", 0, 0, 5 ) );
 		dofs.add( sz = new DoubleParameter( name+" sz", 0, 0, 5 ) );
