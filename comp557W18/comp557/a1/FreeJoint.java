@@ -2,6 +2,8 @@ package comp557.a1;
 
 import javax.vecmath.Tuple3d;
 
+import org.w3c.dom.Element;
+
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 
@@ -52,6 +54,12 @@ public class FreeJoint extends DAGNode {
 		ry.setDefaultValue(tuple3dAttr.y);
 		rz.setDefaultValue(tuple3dAttr.z);
 		
+	}
+	
+	public void setElement(Element element) {
+		element.setAttribute("type", "freejoint");
+		element.setAttribute("name", name);
+		element.setAttribute("position", tx.getDefaultValue() + " " + ty.getDefaultValue()+ " " + tz.getDefaultValue());
 	}
 	
 }

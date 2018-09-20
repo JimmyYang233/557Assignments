@@ -2,6 +2,9 @@ package comp557.a1;
 
 import javax.vecmath.Tuple3d;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 
@@ -64,7 +67,22 @@ public class BallJoint extends DAGNode {
 		rx.setDefaultValue(tuple3dAttr.x);
 		ry.setDefaultValue(tuple3dAttr.y);
 		rz.setDefaultValue(tuple3dAttr.z);
+		System.out.println(rz.getValue());
 		
 	}
 
+	public Element setElement(Document doc, Element parent) {
+		Element element = doc.createElement("node");
+		element.setAttribute("type", "balljoint");
+		element.setAttribute("name", name);
+		element.setAttribute("limitx", rx.getMinimum() + " " + rx.getMaximum() + " 0");
+		//System.out.println(rx.getValue() + " " + ry.getValue() + " " + rz.getValue());
+		element.setAttribute("limity", ry.getMinimum() + " " + ry.getMaximum() + " 0");
+		element.setAttribute("limitz", rz.getMinimum() + " " + rz.getMaximum() + " 0");
+		element.setAttribute("position", tx + " " + ty + " " + tz);
+		element.setAttribute("axis", rx.getDefaultValue() + " " + ry.getDefaultValue() + " " + rz.getDefaultValue());
+		parent.appendChild(element);
+		return element;
+	}
+	
 }

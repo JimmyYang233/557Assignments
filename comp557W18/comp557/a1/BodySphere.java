@@ -2,6 +2,8 @@ package comp557.a1;
 
 import javax.vecmath.Tuple3d;
 
+import org.w3c.dom.Element;
+
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 
@@ -64,5 +66,13 @@ public class BodySphere extends DAGNode{
 		cr = t.x;
 		cg = t.y;
 		cb = t.z;
+	}
+	
+	public void setElement(Element element) {
+		element.setAttribute("type", "bodysphere");
+		element.setAttribute("name", name);
+		element.setAttribute("position", tx + " " + ty + " " + tz);
+		element.setAttribute("scale",  sx + " " + sy + " " + sz);
+		element.setAttribute("color", cr + " " + cg + " " + cb);
 	}
 }

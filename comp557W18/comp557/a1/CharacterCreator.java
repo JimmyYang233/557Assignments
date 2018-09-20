@@ -102,11 +102,7 @@ public class CharacterCreator {
 				
 				//neck
 				Element neck = doc.createElement("geom");
-				neck.setAttribute("type", "bodybox");
-				neck.setAttribute("name", "neck");
-				neck.setAttribute("position", "0 0.5 0");
-				neck.setAttribute("scale", "1 1 1");
-				neck.setAttribute("color", "255 255 0");
+				
 				lowerNeckJoint.appendChild(neck);
 				
 				//head
@@ -119,15 +115,12 @@ public class CharacterCreator {
 				neck.appendChild(head);
 				
 				//rightShoulderJoint
-				Element rightShoulderJoint = doc.createElement("node");
-				rightShoulderJoint.setAttribute("type", "balljoint");
-				rightShoulderJoint.setAttribute("name", "rightshoulderjoint");
-				rightShoulderJoint.setAttribute("limitx", "-180 100 0");
-				rightShoulderJoint.setAttribute("limity", "-90 90 0");
-				rightShoulderJoint.setAttribute("limitz", "-180 0 0 ");
-				rightShoulderJoint.setAttribute("position", "-2 2 0");
-				rightShoulderJoint.setAttribute("axis", "0 0 -100");
-				upperBody.appendChild(rightShoulderJoint);
+				Element rightShoulderJointxml = doc.createElement("node");
+				BallJoint rightShoulderJoint = new BallJoint("rightShouldJoint", -180, 100,-90,90,-180,0);
+				rightShoulderJoint.setPosition(new Point3d(-2,2,0));
+				rightShoulderJoint.setAxis(new Point3d(0,0,-100));
+				rightShoulderJoint.setElement(rightShoulderJointxml);
+				upperBody.appendChild(rightShoulderJointxml);
 				
 				//rightUpperArm
 				Element rightUpperArm = doc.createElement("geom");
@@ -136,7 +129,7 @@ public class CharacterCreator {
 				rightUpperArm.setAttribute("position", "-0.5 -0.5 0");
 				rightUpperArm.setAttribute("scale", "1 3.5 1");
 				rightUpperArm.setAttribute("color", "255 255 0");
-				rightShoulderJoint.appendChild(rightUpperArm);
+				rightShoulderJointxml.appendChild(rightUpperArm);
 				
 				TransformerFactory transformerFactory = TransformerFactory.newInstance();
 				Transformer transformer = transformerFactory.newTransformer();

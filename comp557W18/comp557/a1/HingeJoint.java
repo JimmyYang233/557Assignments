@@ -3,6 +3,8 @@ package comp557.a1;
 import javax.vecmath.Tuple2d;
 import javax.vecmath.Tuple3d;
 
+import org.w3c.dom.Element;
+
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 
@@ -53,6 +55,10 @@ public class HingeJoint extends DAGNode{
 
 	public void setAxis(Tuple3d tuple3dAttr) {
 		rx.setDefaultValue(tuple3dAttr.x);
+		
+	}
+	
+	public void setElement(Element element) {
 		
 	}
 }
