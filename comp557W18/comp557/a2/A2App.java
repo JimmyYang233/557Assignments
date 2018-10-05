@@ -233,8 +233,8 @@ public class A2App implements GLEventListener, Interactor {
     }   
 
 	// TODO: Objective 1 - adjust for your screen resolution and dimension to something reasonable.
-	double screenWidthPixels = 5000;
-	double screenWidthMeters = 1.0;
+	double screenWidthPixels = 1920;
+	double screenWidthMeters = 0.35;
 	double metersPerPixel = screenWidthMeters / screenWidthPixels;
     
     @Override
@@ -253,12 +253,36 @@ public class A2App implements GLEventListener, Interactor {
             tbc.prepareForDisplay(drawable);
             gl.glScaled(15,15,15);        
             
+            //draw eye position
             gl.glPushMatrix();
+    		gl.glScaled(0.0125, 0.0125, 0.0125);
+    		//System.out.println(h);
+    		gl.glTranslated(0, h*40, eyeZPosition.getValue()*80);
+    		gl.glColor3d(1, 1, 1);
+    		glut.glutSolidSphere(1, 300, 300);
+    		gl.glPopMatrix();
+            
+            gl.glPushMatrix();
+            gl.glBegin(GL.GL_LINE_LOOP);
+            gl.glColor3d(1, 1, 0);
+            gl.glVertex2d(-w/2, 0);
+            gl.glVertex2d(w/2, 0);
+            gl.glVertex2d(w/2, h);
+            gl.glVertex2d(-w/2, h);
+            gl.glEnd();
             tbc2.applyViewTransformation(drawable); // only the view transformation
             scene.display( drawable );
             gl.glPopMatrix();
             
             // TODO: Objective 2 - draw camera frustum if drawCenterEyeFrustum is true
+            if(drawCenterEyeFrustum.getValue()) {
+            	System.out.println("was here");
+            	gl.glPushMatrix();
+            	gl.glLoadIdentity();
+            	gl.glColor3d(1, 1, 1);
+            	gl.glFrustum(-w*40, w*40, h*40 , -h*40, 15, 30);
+            	gl.glPopMatrix();
+            }
             
             // TODO: Objective 6 - draw left and right eye frustums if drawEyeFrustums is true
             
