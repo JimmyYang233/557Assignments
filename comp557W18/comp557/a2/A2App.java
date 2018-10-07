@@ -294,16 +294,12 @@ public class A2App implements GLEventListener, Interactor {
             	gl.glMatrixMode(GL2.GL_MODELVIEW);
             	FlatMatrix4f converter = new FlatMatrix4f(matrix);
             	//gl.glTranslated(0, 0.075, 0);
+            	gl.glPushMatrix();
             	gl.glMultMatrixf(converter.asArray(), 0);           	
             	//gl.glMatrixMode(GL.GL_INVERT);
             	gl.glColor3f(1, 1, 1);
             	glut.glutWireCube(2);
-            	
-            	
-            	
-            	
-            	
-            	
+            	gl.glPopMatrix();
             	
             }
             
@@ -314,11 +310,14 @@ public class A2App implements GLEventListener, Interactor {
         	tbc.prepareForDisplay(drawable);
             gl.glScaled(15,15,15);        
             gl.glMatrixMode(GL2.GL_PROJECTION);
+            //gl.glLoadIdentity();
             gl.glTranslated(0, 0, eyeZPosition.getValue());
             gl.glMatrixMode(GL2.GL_MODELVIEW);
+            //gl.glLoadIdentity();
             gl.glTranslated(0, 0, eyeZPosition.getValue());
             //draw eye position
             
+            gl.glPushMatrix();
             gl.glBegin(GL.GL_LINE_LOOP);
             gl.glColor3d(1, 1, 0);
             gl.glVertex2d(-w/2, -h/2);
@@ -326,8 +325,7 @@ public class A2App implements GLEventListener, Interactor {
             gl.glVertex2d(w/2, h/2);
             gl.glVertex2d(-w/2, h/2);
             gl.glEnd();
-            tbc2.applyViewTransformation(drawable); // only the view transformation
-            scene.display( drawable );
+            
             
     		//System.out.println(h);
     		gl.glTranslated(0, 0, eyeZPosition.getValue());
@@ -358,7 +356,10 @@ public class A2App implements GLEventListener, Interactor {
             	glut.glutWireCube(2);
         	//System.out.println("viewMode2");
             }
-        	
+            gl.glPopMatrix();
+            tbc2.applyViewTransformation(drawable); // only the view transformation
+            scene.display( drawable );
+            
         } else if ( viewingMode == 3 ) {            
         	
         	// TODO: Objective 5 - draw center eye with depth of field blur
