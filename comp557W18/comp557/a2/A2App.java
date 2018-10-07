@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
+import javax.vecmath.Matrix4d;
 import javax.vecmath.Matrix4f;
 
 import com.jogamp.opengl.DebugGL2;
@@ -33,6 +34,7 @@ import mintools.parameters.DoubleParameter;
 import mintools.parameters.IntParameter;
 import mintools.swing.ControlFrame;
 import mintools.swing.VerticalFlowPanel;
+import mintools.viewer.FlatMatrix4d;
 import mintools.viewer.FlatMatrix4f;
 import mintools.viewer.Interactor;
 import mintools.viewer.TrackBallCamera;
@@ -272,11 +274,9 @@ public class A2App implements GLEventListener, Interactor {
             scene.display( drawable );
             
     		//System.out.println(h);
-            gl.glPushMatrix();
-    		gl.glTranslated(0, 0, eyeZPosition.getValue());
+    		gl.glTranslated(0, 0, 0.5);
     		gl.glColor3d(1, 1, 1);
     		glut.glutSolidSphere(0.0125, 300, 300);
-    		gl.glPopMatrix();
             
             // TODO: Objective 2 - draw camera frustum if drawCenterEyeFrustum is true
             if(drawCenterEyeFrustum.getValue()) {
@@ -284,22 +284,24 @@ public class A2App implements GLEventListener, Interactor {
             	gl.glMatrixMode(GL2.GL_PROJECTION);
             	gl.glPushMatrix();
             	gl.glLoadIdentity();
-            	gl.glFrustum(-w/2, w/2, -h/2, h/2, -nearZPosition.getValue()+eyeZPosition.getValue(), (-farZPosition.getValue()+eyeZPosition.getValue()));
-            	System.out.println(-nearZPosition.getValue()+eyeZPosition.getValue());
-            	System.out.println(-farZPosition.getValue()+eyeZPosition.getValue());
-            	float[] PR = new float[16];
-            	gl.glGetFloatv(GL2.GL_PROJECTION_MATRIX, PR, 0);
+            	gl.glFrustum(-w/2, w/2, -h/2, h/2, 0.1, 1);
+            	//System.out.println(-nearZPosition.getValue()+eyeZPosition.getValue());
+            	//System.out.println(-farZPosition.getValue()+eyeZPosition.getValue());
+            	double[] PR = new double[16];
+            	gl.glGetDoublev(GL2.GL_PROJECTION_MATRIX, PR, 0);
             	gl.glPopMatrix();
-            	Matrix4f matrix = new Matrix4f(PR);
+            	Matrix4d matrix = new Matrix4d(PR);
+            	//System.out.println(matrix);
             	matrix.invert();
+            	//System.out.println(matrix);
 //            	for(float value : matrix.getMatrix()){
 //            		System.out.println(value);
 //            	}
             	gl.glMatrixMode(GL2.GL_MODELVIEW);
-            	FlatMatrix4f converter = new FlatMatrix4f(matrix);
+            	FlatMatrix4d converter = new FlatMatrix4d(matrix);
             	gl.glPushMatrix();
-            	gl.glTranslated(0, 0, eyeZPosition.getValue());
-            	gl.glMultMatrixf(converter.asArray(), 0);           	
+            	//gl.glTranslated(0, 0, 0.5);
+            	gl.glMultMatrixd(converter.asArray(), 0);           	
             	glut.glutWireCube(2);
             	gl.glPopMatrix();
             	
