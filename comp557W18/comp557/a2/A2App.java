@@ -7,10 +7,14 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
+import javax.vecmath.Matrix4f;
 
 import com.jogamp.opengl.DebugGL2;
 import com.jogamp.opengl.GL;
@@ -20,6 +24,7 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
+import com.jogamp.opengl.math.Matrix4;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.gl2.GLUT;
 
@@ -28,6 +33,7 @@ import mintools.parameters.DoubleParameter;
 import mintools.parameters.IntParameter;
 import mintools.swing.ControlFrame;
 import mintools.swing.VerticalFlowPanel;
+import mintools.viewer.FlatMatrix4f;
 import mintools.viewer.Interactor;
 import mintools.viewer.TrackBallCamera;
 
@@ -234,7 +240,7 @@ public class A2App implements GLEventListener, Interactor {
 
 	// TODO: Objective 1 - adjust for your screen resolution and dimension to something reasonable.
 	double screenWidthPixels = 1920;
-	double screenWidthMeters = 0.35;
+	double screenWidthMeters = 0.60;
 	double metersPerPixel = screenWidthMeters / screenWidthPixels;
     
     @Override
@@ -254,41 +260,105 @@ public class A2App implements GLEventListener, Interactor {
             gl.glScaled(15,15,15);        
             
             //draw eye position
-            gl.glPushMatrix();
-    		gl.glScaled(0.0125, 0.0125, 0.0125);
-    		//System.out.println(h);
-    		gl.glTranslated(0, h*40, eyeZPosition.getValue()*80);
-    		gl.glColor3d(1, 1, 1);
-    		glut.glutSolidSphere(1, 300, 300);
-    		gl.glPopMatrix();
             
-            gl.glPushMatrix();
             gl.glBegin(GL.GL_LINE_LOOP);
             gl.glColor3d(1, 1, 0);
-            gl.glVertex2d(-w/2, 0);
-            gl.glVertex2d(w/2, 0);
-            gl.glVertex2d(w/2, h);
-            gl.glVertex2d(-w/2, h);
+            gl.glVertex2d(-w/2, -h/2);
+            gl.glVertex2d(w/2, -h/2);
+            gl.glVertex2d(w/2, h/2);
+            gl.glVertex2d(-w/2, h/2);
             gl.glEnd();
             tbc2.applyViewTransformation(drawable); // only the view transformation
             scene.display( drawable );
-            gl.glPopMatrix();
+            
+    		//System.out.println(h);
+    		gl.glTranslated(0, 0, eyeZPosition.getValue());
+    		gl.glColor3d(1, 1, 1);
+    		glut.glutSolidSphere(0.0125, 300, 300);
             
             // TODO: Objective 2 - draw camera frustum if drawCenterEyeFrustum is true
             if(drawCenterEyeFrustum.getValue()) {
-            	System.out.println("was here");
+            	//System.out.println("was here");
+            	gl.glMatrixMode(GL2.GL_PROJECTION);
             	gl.glPushMatrix();
             	gl.glLoadIdentity();
-            	gl.glColor3d(1, 1, 1);
-            	gl.glFrustum(-w*40, w*40, h*40 , -h*40, 15, 30);
+            	gl.glFrustum(-w/2, w/2, -h/2, h/2, -nearZPosition.getValue()+eyeZPosition.getValue(), -farZPosition.getValue()+eyeZPosition.getValue());
+            	float[] PR = new float[16];
+            	gl.glGetFloatv(GL2.GL_PROJECTION_MATRIX, PR, 0);
             	gl.glPopMatrix();
+            	Matrix4f matrix = new Matrix4f(PR);
+            	matrix.invert();
+//            	for(float value : matrix.getMatrix()){
+//            		System.out.println(value);
+//            	}
+            	gl.glMatrixMode(GL2.GL_MODELVIEW);
+            	FlatMatrix4f converter = new FlatMatrix4f(matrix);
+            	//gl.glTranslated(0, 0.075, 0);
+            	gl.glMultMatrixf(converter.asArray(), 0);           	
+            	//gl.glMatrixMode(GL.GL_INVERT);
+            	gl.glColor3f(1, 1, 1);
+            	glut.glutWireCube(2);
+            	
+            	
+            	
+            	
+            	
+            	
+            	
             }
             
             // TODO: Objective 6 - draw left and right eye frustums if drawEyeFrustums is true
             
         } else if ( viewingMode == 2 ) {
         	
-        	// TODO: Objective 2 - draw the center eye camera view
+        	tbc.prepareForDisplay(drawable);
+            gl.glScaled(15,15,15);        
+            gl.glMatrixMode(GL2.GL_PROJECTION);
+            gl.glTranslated(0, 0, eyeZPosition.getValue());
+            gl.glMatrixMode(GL2.GL_MODELVIEW);
+            gl.glTranslated(0, 0, eyeZPosition.getValue());
+            gl.glRotated(0, 0, 0, 0);
+            //draw eye position
+            
+            gl.glBegin(GL.GL_LINE_LOOP);
+            gl.glColor3d(1, 1, 0);
+            gl.glVertex2d(-w/2, -h/2);
+            gl.glVertex2d(w/2, -h/2);
+            gl.glVertex2d(w/2, h/2);
+            gl.glVertex2d(-w/2, h/2);
+            gl.glEnd();
+            tbc2.applyViewTransformation(drawable); // only the view transformation
+            scene.display( drawable );
+            
+    		//System.out.println(h);
+    		gl.glTranslated(0, 0, eyeZPosition.getValue());
+    		gl.glColor3d(1, 1, 1);
+    		glut.glutSolidSphere(0.0125, 300, 300);
+            
+            // TODO: Objective 2 - draw camera frustum if drawCenterEyeFrustum is true
+            if(drawCenterEyeFrustum.getValue()) {
+            	//System.out.println("was here");
+            	gl.glMatrixMode(GL2.GL_PROJECTION);
+            	gl.glPushMatrix();
+            	gl.glLoadIdentity();
+            	gl.glFrustum(-w/2, w/2, -h/2, h/2, -nearZPosition.getValue()+eyeZPosition.getValue(), -farZPosition.getValue()+eyeZPosition.getValue());
+            	float[] PR = new float[16];
+            	gl.glGetFloatv(GL2.GL_PROJECTION_MATRIX, PR, 0);
+            	gl.glPopMatrix();
+            	Matrix4f matrix = new Matrix4f(PR);
+            	matrix.invert();
+//            	for(float value : matrix.getMatrix()){
+//            		System.out.println(value);
+//            	}
+            	gl.glMatrixMode(GL2.GL_MODELVIEW);
+            	FlatMatrix4f converter = new FlatMatrix4f(matrix);
+            	//gl.glTranslated(0, 0.075, 0);
+            	gl.glMultMatrixf(converter.asArray(), 0);           	
+            	//gl.glMatrixMode(GL.GL_INVERT);
+            	gl.glColor3f(1, 1, 1);
+            	glut.glutWireCube(2);
+        	//System.out.println("viewMode2");
+            }
         	
         } else if ( viewingMode == 3 ) {            
         	
