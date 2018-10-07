@@ -272,9 +272,11 @@ public class A2App implements GLEventListener, Interactor {
             scene.display( drawable );
             
     		//System.out.println(h);
+            gl.glPushMatrix();
     		gl.glTranslated(0, 0, eyeZPosition.getValue());
     		gl.glColor3d(1, 1, 1);
     		glut.glutSolidSphere(0.0125, 300, 300);
+    		gl.glPopMatrix();
             
             // TODO: Objective 2 - draw camera frustum if drawCenterEyeFrustum is true
             if(drawCenterEyeFrustum.getValue()) {
@@ -282,7 +284,9 @@ public class A2App implements GLEventListener, Interactor {
             	gl.glMatrixMode(GL2.GL_PROJECTION);
             	gl.glPushMatrix();
             	gl.glLoadIdentity();
-            	gl.glFrustum(-w/2, w/2, -h/2, h/2, -nearZPosition.getValue()+eyeZPosition.getValue(), -farZPosition.getValue()+eyeZPosition.getValue());
+            	gl.glFrustum(-w/2, w/2, -h/2, h/2, -nearZPosition.getValue()+eyeZPosition.getValue(), (-farZPosition.getValue()+eyeZPosition.getValue()));
+            	System.out.println(-nearZPosition.getValue()+eyeZPosition.getValue());
+            	System.out.println(-farZPosition.getValue()+eyeZPosition.getValue());
             	float[] PR = new float[16];
             	gl.glGetFloatv(GL2.GL_PROJECTION_MATRIX, PR, 0);
             	gl.glPopMatrix();
@@ -293,11 +297,9 @@ public class A2App implements GLEventListener, Interactor {
 //            	}
             	gl.glMatrixMode(GL2.GL_MODELVIEW);
             	FlatMatrix4f converter = new FlatMatrix4f(matrix);
-            	//gl.glTranslated(0, 0.075, 0);
             	gl.glPushMatrix();
+            	gl.glTranslated(0, 0, eyeZPosition.getValue());
             	gl.glMultMatrixf(converter.asArray(), 0);           	
-            	//gl.glMatrixMode(GL.GL_INVERT);
-            	gl.glColor3f(1, 1, 1);
             	glut.glutWireCube(2);
             	gl.glPopMatrix();
             	
