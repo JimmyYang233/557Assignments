@@ -317,7 +317,6 @@ public class A2App implements GLEventListener, Interactor {
             gl.glTranslated(0, 0, eyeZPosition.getValue());
             gl.glMatrixMode(GL2.GL_MODELVIEW);
             gl.glTranslated(0, 0, eyeZPosition.getValue());
-            gl.glRotated(0, 0, 0, 0);
             //draw eye position
             
             gl.glBegin(GL.GL_LINE_LOOP);
