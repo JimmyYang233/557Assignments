@@ -274,31 +274,24 @@ public class A2App implements GLEventListener, Interactor {
             scene.display( drawable );
             
     		//System.out.println(h);
-    		gl.glTranslated(0, 0, 0.5);
+    		gl.glTranslated(0, 0, eyeZPosition.getValue());
     		gl.glColor3d(1, 1, 1);
     		glut.glutSolidSphere(0.0125, 300, 300);
             
             // TODO: Objective 2 - draw camera frustum if drawCenterEyeFrustum is true
             if(drawCenterEyeFrustum.getValue()) {
-            	//System.out.println("was here");
             	gl.glMatrixMode(GL2.GL_PROJECTION);
             	gl.glPushMatrix();
             	gl.glLoadIdentity();
-            	gl.glFrustum(-w/2, w/2, -h/2, h/2, 0.1, 1);
-            	//System.out.println(-nearZPosition.getValue()+eyeZPosition.getValue());
-            	//System.out.println(-farZPosition.getValue()+eyeZPosition.getValue());
+            	gl.glFrustum(-w/2, w/2, -h/2, h/2, (-farZPosition.getValue()+eyeZPosition.getValue())*0.1/(-nearZPosition.getValue()+eyeZPosition.getValue()), -farZPosition.getValue()+eyeZPosition.getValue());
             	double[] PR = new double[16];
             	gl.glGetDoublev(GL2.GL_PROJECTION_MATRIX, PR, 0);
             	gl.glPopMatrix();
             	Matrix4d matrix = new Matrix4d(PR);
             	//System.out.println(matrix);
             	matrix.invert();
-            	//System.out.println(matrix);
-//            	for(float value : matrix.getMatrix()){
-//            		System.out.println(value);
-//            	}
-            	gl.glMatrixMode(GL2.GL_MODELVIEW);
             	FlatMatrix4d converter = new FlatMatrix4d(matrix);
+            	gl.glMatrixMode(GL2.GL_MODELVIEW);
             	gl.glPushMatrix();
             	//gl.glTranslated(0, 0, 0.5);
             	gl.glMultMatrixd(converter.asArray(), 0);           	
