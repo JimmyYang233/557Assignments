@@ -74,7 +74,7 @@ public class A2App implements GLEventListener, Interactor {
     private DoubleParameter focalPlaneZPosition = new DoubleParameter( "focal z", 0, -1.5, 0.4 );     
 
     /** Samples for drawing depth of field blur */    
-    private IntParameter samples = new IntParameter( "samples", 5, 1, 100 );   
+    private IntParameter samples = new IntParameter( "samples", 5, 1, 1000 );   
     
     /** 
      * Aperture size for drawing depth of field blur
@@ -106,7 +106,7 @@ public class A2App implements GLEventListener, Interactor {
     
     private Scene scene = new Scene();
     
-	 FastPoissonDisk disk = new FastPoissonDisk();
+
     
    
 
@@ -282,23 +282,70 @@ public class A2App implements GLEventListener, Interactor {
         double nearhb = (-h*nearVar/(2*eyeP))*hbOffset/hb;
         double nearht= (h*nearVar/(2*eyeP))*htOffset/ht;
         
+        double leftEyeOffset = -eyeDisparity.getValue()/2;
+        double rightEyeOffset = eyeDisparity.getValue()/2;
+        double lefteyewlOffset = -w/2-leftEyeOffset;
+		double lefteyewrOffset = w/2-leftEyeOffset;
+		double lefteyehbOffset = -h/2;
+		double lefteyehtOffset = h/2;
+		
+		double focalleftEyeOffsetwl = lefteyewlOffset*planeP/eyeP;
+		double focalleftEyeOffsetwr = lefteyewrOffset*planeP/eyeP;
+		//System.out.println(focalleftEyeOffsetwl + ", " +focalleftEyeOffsetwr);
+		double focalleftEyeOffsethb = lefteyehbOffset*planeP/eyeP;
+		double focalleftEyeOffsetht = lefteyehtOffset*planeP/eyeP;
+		
+
+		
+		double leftEyeNearwl = (-w*nearVar/(2*eyeP))*lefteyewlOffset/(-w/2);
+        double leftEyeNearwr = (w*nearVar/(2*eyeP))*lefteyewrOffset/(w/2);
+        double leftEyeNearhb = (-h*nearVar/(2*eyeP))*lefteyehbOffset/(-h/2);
+        double leftEyeNearht= (h*nearVar/(2*eyeP))*lefteyehtOffset/(h/2);
+        
+        double righteyewlOffset = -w/2-rightEyeOffset;
+		double righteyewrOffset = w/2-rightEyeOffset;
+		double righteyehbOffset = -h/2;
+		double righteyehtOffset = h/2;
+		
+		double focalrightEyeOffsetwl = righteyewlOffset*planeP/eyeP;
+		double focalrightEyeOffsetwr = righteyewrOffset*planeP/eyeP;
+		double focalrightEyeOffsethb = righteyehbOffset*planeP/eyeP;
+		double focalrightEyeOffsetht = righteyehtOffset*planeP/eyeP;
+		
+		double rightEyeNearwl = (-w*nearVar/(2*eyeP))*righteyewlOffset/(-w/2);
+        double rightEyeNearwr = (w*nearVar/(2*eyeP))*righteyewrOffset/(w/2);
+        double rightEyeNearhb = (-h*nearVar/(2*eyeP))*righteyehbOffset/(-h/2);
+        double rightEyeNearht= (h*nearVar/(2*eyeP))*righteyehtOffset/(h/2);
+		
+        
         
         //prepare frustum
         gl.glMatrixMode(GL2.GL_PROJECTION);
     	gl.glPushMatrix();
     	gl.glLoadIdentity();
     	gl.glFrustum(nearwl, nearwr, nearhb, nearht, nearVar, farVar);
-    	//System.out.println(nearwl+", " + nearwr + ", " + nearhb+ "," + nearht + "," + nearVar+ "," + farVar);
-    	//gl.glFrustum(-w/2, w/2, -h/2, h/2, (-farZPosition.getValue()+eyeZPosition.getValue())*0.1/(-nearZPosition.getValue()+eyeZPosition.getValue()), -farZPosition.getValue()+eyeZPosition.getValue());
     	FlatMatrix4d matrix = new FlatMatrix4d();
     	FlatMatrix4d invert = new FlatMatrix4d();
     	gl.glGetDoublev(GL2.GL_PROJECTION_MATRIX, matrix.asArray(), 0);
     	gl.glLoadIdentity();
+    	gl.glFrustum(leftEyeNearwl, leftEyeNearwr, leftEyeNearhb, leftEyeNearht, nearVar, farVar);
+    	FlatMatrix4d leftEyematrix = new FlatMatrix4d();
+    	FlatMatrix4d leftEyeinvert = new FlatMatrix4d();
+    	gl.glGetDoublev(GL2.GL_PROJECTION_MATRIX, leftEyematrix.asArray(), 0);
+    	gl.glLoadIdentity();
+    	gl.glFrustum(rightEyeNearwl, rightEyeNearwr, rightEyeNearhb, rightEyeNearht, nearVar, farVar);
+    	FlatMatrix4d rightEyematrix = new FlatMatrix4d();
+    	FlatMatrix4d rightEyeinvert = new FlatMatrix4d();
+    	gl.glGetDoublev(GL2.GL_PROJECTION_MATRIX, rightEyematrix.asArray(), 0);
     	gl.glPopMatrix();
     	matrix.reconstitute();
     	invert.getBackingMatrix().invert(matrix.getBackingMatrix());
+    	leftEyematrix.reconstitute();
+    	leftEyeinvert.getBackingMatrix().invert(leftEyematrix.getBackingMatrix());
+    	rightEyematrix.reconstitute();
+    	rightEyeinvert.getBackingMatrix().invert(rightEyematrix.getBackingMatrix());
     	gl.glMatrixMode(GL2.GL_MODELVIEW);
-    	
+    	gl.glColorMask(true, true, true, true);
     	
     	//focal rectangle values
     	
@@ -330,20 +377,25 @@ public class A2App implements GLEventListener, Interactor {
     		glut.glutSolidSphere(0.0125, 300, 300);
     		gl.glPopMatrix();
     		
-    		//draw focal rectangle
-    		gl.glPushMatrix();
-    		gl.glTranslated(0, 0, FRD);
-    		gl.glColor3d(200.0/255.0, 200.0/255.0, 200.0/255.0);
-    		gl.glBegin(GL.GL_LINE_LOOP);
-            gl.glVertex2d(wl, hb);
-            gl.glVertex2d(wr, hb);
-            gl.glVertex2d(wr, ht);
-            gl.glVertex2d(wl, ht);
-            gl.glEnd();
-            gl.glPopMatrix();
+    		
+            
+            
+            
             
             // TODO: Objective 2 - draw camera frustum if drawCenterEyeFrustum is true
             if(drawCenterEyeFrustum.getValue()) {
+            	
+            	//draw focal rectangle
+        		gl.glPushMatrix();
+        		gl.glTranslated(0, 0, FRD);
+        		gl.glColor3d(200.0/255.0, 200.0/255.0, 200.0/255.0);
+        		gl.glBegin(GL.GL_LINE_LOOP);
+                gl.glVertex2d(wl, hb);
+                gl.glVertex2d(wr, hb);
+                gl.glVertex2d(wr, ht);
+                gl.glVertex2d(wl, ht);
+                gl.glEnd();
+                gl.glPopMatrix();
             	
             	//converter.reconstitute();
             	gl.glPushMatrix();
@@ -355,6 +407,51 @@ public class A2App implements GLEventListener, Interactor {
             	gl.glPopMatrix();
             	
             	
+            	
+            	
+            }
+            if(drawEyeFrustums.getValue()) {
+            	
+            	//draw lefteye focal rectangle
+                gl.glPushMatrix();
+        		gl.glTranslated(leftEyeOffset, 0, FRD);
+        		gl.glColor3d(200.0/255.0, 200.0/255.0, 200.0/255.0);
+        		gl.glBegin(GL.GL_LINE_LOOP);
+                gl.glVertex2d(focalleftEyeOffsetwl, focalleftEyeOffsethb);
+                gl.glVertex2d(focalleftEyeOffsetwr, focalleftEyeOffsethb);
+                gl.glVertex2d(focalleftEyeOffsetwr, focalleftEyeOffsetht );
+                gl.glVertex2d(focalleftEyeOffsetwl, focalleftEyeOffsetht );
+                gl.glEnd();
+                gl.glPopMatrix();
+            	
+                
+                //draw righteye focal rectangle
+                gl.glPushMatrix();
+        		gl.glTranslated(rightEyeOffset, 0, FRD);
+        		gl.glColor3d(200.0/255.0, 200.0/255.0, 200.0/255.0);
+        		gl.glBegin(GL.GL_LINE_LOOP);
+                gl.glVertex2d(focalrightEyeOffsetwl, focalrightEyeOffsethb);
+                gl.glVertex2d(focalrightEyeOffsetwr, focalrightEyeOffsethb);
+                gl.glVertex2d(focalrightEyeOffsetwr, focalrightEyeOffsetht );
+                gl.glVertex2d(focalrightEyeOffsetwl, focalrightEyeOffsetht );
+                gl.glEnd();
+                gl.glPopMatrix();
+                
+            	
+            	gl.glPushMatrix();
+            	gl.glTranslated(leftEyeOffset, 0, eyeZPosition.getValue());
+            	//gl.glFrustum(-1,1,-1,1,-nearZPosition.getValue()+eyeZPosition.getValue(), -farZPosition.getValue()+eyeZPosition.getValue());
+            	gl.glColor3d(1,0,0);
+            	gl.glMultMatrixd(leftEyeinvert.asArray(), 0);           	
+            	glut.glutWireCube(2);
+            	gl.glPopMatrix();
+            	gl.glPushMatrix();
+            	gl.glTranslated(rightEyeOffset, 0, eyeZPosition.getValue());
+            	//gl.glFrustum(-1,1,-1,1,-nearZPosition.getValue()+eyeZPosition.getValue(), -farZPosition.getValue()+eyeZPosition.getValue());
+            	gl.glColor3d(0,0,1);
+            	gl.glMultMatrixd(rightEyeinvert.asArray(), 0);           	
+            	glut.glutWireCube(2);
+            	gl.glPopMatrix();
             }
             
             
@@ -414,36 +511,10 @@ public class A2App implements GLEventListener, Interactor {
         	
         	int numSamples = samples.getValue();
         	double apertureSize = aperture.getValue();
-        	//draw yellow rectangle
-            gl.glPushMatrix();
-            gl.glColor3d(1, 1, 0);
-            gl.glBegin(GL.GL_LINE_LOOP);
-            gl.glVertex2d(-w/2, -h/2);
-            gl.glVertex2d(w/2, -h/2);
-            gl.glVertex2d(w/2, h/2);
-            gl.glVertex2d(-w/2, h/2);
-            gl.glEnd();
-            gl.glPopMatrix();
-        	
-        	//draw focal rectangle
-    		gl.glPushMatrix();
-    		gl.glTranslated(0, 0, FRD);
-    		gl.glColor3d(200.0/255.0, 200.0/255.0, 200.0/255.0);
-    		gl.glBegin(GL.GL_LINE_LOOP);
-            gl.glVertex2d(wl, hb);
-            gl.glVertex2d(wr, hb);
-            gl.glVertex2d(wr, ht);
-            gl.glVertex2d(wl, ht);
-            gl.glEnd();
-            gl.glPopMatrix();
-            
-            //Objective 2 - draw camera frustum if drawCenterEyeFrustum is true
-          
-            
-            // TODO: Objective 6 - draw left and right eye frustums if drawEyeFrustums is true
-        	
-        	
+        	   
+        	gl.glClear(GL2.GL_ACCUM_BUFFER_BIT);
         	//System.out.println(apertureSize);
+       	 	FastPoissonDisk disk = new FastPoissonDisk();
         	for(int i  = 0; i<numSamples; i++) {
         		Point2d p = new Point2d();
         		disk.get(p, i, numSamples);
@@ -478,6 +549,18 @@ public class A2App implements GLEventListener, Interactor {
             	gl.glMatrixMode(GL2.GL_MODELVIEW);
             	
             	if(drawCenterEyeFrustum.getValue()) {
+            		//draw focal rectangle
+            		gl.glPushMatrix();
+            		gl.glTranslated(0, 0, FRD);
+            		gl.glColor3d(200.0/255.0, 200.0/255.0, 200.0/255.0);
+            		gl.glBegin(GL.GL_LINE_LOOP);
+                    gl.glVertex2d(wl, hb);
+                    gl.glVertex2d(wr, hb);
+                    gl.glVertex2d(wr, ht);
+                    gl.glVertex2d(wl, ht);
+                    gl.glEnd();
+                    gl.glPopMatrix();
+            		
                 	
                 	//converter.reconstitute();
                 	gl.glPushMatrix();
@@ -491,7 +574,7 @@ public class A2App implements GLEventListener, Interactor {
                 	
                 }
             	
-            	gl.glClear(GL2.GL_ACCUM_BUFFER_BIT);
+
 	        	gl.glMatrixMode(GL2.GL_PROJECTION);
 	            gl.glLoadMatrixd(newMatrix.asArray(),0);
 	            gl.glMatrixMode(GL2.GL_MODELVIEW);
@@ -508,25 +591,302 @@ public class A2App implements GLEventListener, Interactor {
                 }
         	}
         	gl.glAccum(GL2.GL_RETURN, 1);
+        	
             
         	
         	
             
         } else if ( viewingMode == 4 ) {
+        	gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
+        	gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
         	
-            // TODO: Objective 6 - draw the left eye view
+        	gl.glMatrixMode(GL2.GL_PROJECTION);
+            gl.glLoadMatrixd(leftEyematrix.asArray(),0);
+            gl.glMatrixMode(GL2.GL_MODELVIEW);
+            gl.glLoadIdentity();
+            gl.glTranslated(-leftEyeOffset, 0, -eyeZPosition.getValue());
+            
+            
+            
+        	//gl.glScaled(15, 15, 15);     
+            gl.glBegin(GL.GL_LINE_LOOP);
+            gl.glColor3d(1, 1, 0);
+            gl.glVertex2d(-w/2, -h/2);
+            gl.glVertex2d(w/2, -h/2);
+            gl.glVertex2d(w/2, h/2);
+            gl.glVertex2d(-w/2, h/2);
+            gl.glEnd();
+            
+          
+            
+          
+            
+            // TODO: Objective 2 - draw camera frustum if drawCenterEyeFrustum is true
+            if(drawCenterEyeFrustum.getValue()) {
+            	//draw focal rectangle
+        		gl.glPushMatrix();
+        		gl.glTranslated(0, 0, FRD);
+        		gl.glColor3d(200.0/255.0, 200.0/255.0, 200.0/255.0);
+        		gl.glBegin(GL.GL_LINE_LOOP);
+                gl.glVertex2d(wl, hb);
+                gl.glVertex2d(wr, hb);
+                gl.glVertex2d(wr, ht);
+                gl.glVertex2d(wl, ht);
+                gl.glEnd();
+                gl.glPopMatrix();
+            	
+            	gl.glPushMatrix();
+            	gl.glTranslated(eyeXOffset.getValue(), eyeYOffset.getValue(), eyeZPosition.getValue());
+            	gl.glMultMatrixd(invert.asArray(), 0);   
+            	gl.glColor3d(1, 1, 1);
+            	glut.glutWireCube(2);
+            	gl.glPopMatrix();
+            	
+            }
+            if(drawEyeFrustums.getValue()) {
+            	//draw lefteye focal rectangle
+                gl.glPushMatrix();
+        		gl.glTranslated(leftEyeOffset, 0, FRD);
+        		gl.glColor3d(200.0/255.0, 200.0/255.0, 200.0/255.0);
+        		gl.glBegin(GL.GL_LINE_LOOP);
+                gl.glVertex2d(focalleftEyeOffsetwl, focalleftEyeOffsethb);
+                gl.glVertex2d(focalleftEyeOffsetwr, focalleftEyeOffsethb);
+                gl.glVertex2d(focalleftEyeOffsetwr, focalleftEyeOffsetht );
+                gl.glVertex2d(focalleftEyeOffsetwl, focalleftEyeOffsetht );
+                gl.glEnd();
+                gl.glPopMatrix();
+            	
+            	gl.glPushMatrix();
+            	gl.glTranslated(leftEyeOffset, 0, eyeZPosition.getValue());
+            	//gl.glFrustum(-1,1,-1,1,-nearZPosition.getValue()+eyeZPosition.getValue(), -farZPosition.getValue()+eyeZPosition.getValue());
+            	gl.glColor3d(1,0,0);
+            	gl.glMultMatrixd(leftEyeinvert.asArray(), 0);           	
+            	glut.glutWireCube(2);
+            	gl.glPopMatrix();
+            }
+            tbc2.applyViewTransformation(drawable); // only the view transformation
+            scene.display( drawable );
+        	
         	
         } else if ( viewingMode == 5 ) {  
+        	gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
+        	gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
         	
-        	// TODO: Objective 6 - draw the right eye view
+        	gl.glMatrixMode(GL2.GL_PROJECTION);
+            gl.glLoadMatrixd(rightEyematrix.asArray(),0);
+            gl.glMatrixMode(GL2.GL_MODELVIEW);
+            gl.glLoadIdentity();
+            gl.glTranslated(-rightEyeOffset, 0, -eyeZPosition.getValue());
+            
+            
+            
+        	//gl.glScaled(15, 15, 15);     
+            gl.glBegin(GL.GL_LINE_LOOP);
+            gl.glColor3d(1, 1, 0);
+            gl.glVertex2d(-w/2, -h/2);
+            gl.glVertex2d(w/2, -h/2);
+            gl.glVertex2d(w/2, h/2);
+            gl.glVertex2d(-w/2, h/2);
+            gl.glEnd();
+            
+         
+            
+            // TODO: Objective 2 - draw camera frustum if drawCenterEyeFrustum is true
+            if(drawCenterEyeFrustum.getValue()) {
+            	 //draw focal rectangle
+        		gl.glPushMatrix();
+        		gl.glTranslated(0, 0, FRD);
+        		gl.glColor3d(200.0/255.0, 200.0/255.0, 200.0/255.0);
+        		gl.glBegin(GL.GL_LINE_LOOP);
+                gl.glVertex2d(wl, hb);
+                gl.glVertex2d(wr, hb);
+                gl.glVertex2d(wr, ht);
+                gl.glVertex2d(wl, ht);
+                gl.glEnd();
+                gl.glPopMatrix();
+            	
+            	gl.glPushMatrix();
+            	gl.glTranslated(eyeXOffset.getValue(), eyeYOffset.getValue(), eyeZPosition.getValue());
+            	gl.glMultMatrixd(invert.asArray(), 0);   
+            	gl.glColor3d(1, 1, 1);
+            	glut.glutWireCube(2);
+            	gl.glPopMatrix();
+            	
+            }
+            if(drawEyeFrustums.getValue()) {
+            	//draw righteye focal rectangle
+                gl.glPushMatrix();
+        		gl.glTranslated(rightEyeOffset, 0, FRD);
+        		gl.glColor3d(200.0/255.0, 200.0/255.0, 200.0/255.0);
+        		gl.glBegin(GL.GL_LINE_LOOP);
+                gl.glVertex2d(focalrightEyeOffsetwl, focalrightEyeOffsethb);
+                gl.glVertex2d(focalrightEyeOffsetwr, focalrightEyeOffsethb);
+                gl.glVertex2d(focalrightEyeOffsetwr, focalrightEyeOffsetht );
+                gl.glVertex2d(focalrightEyeOffsetwl, focalrightEyeOffsetht );
+                gl.glEnd();
+                gl.glPopMatrix();
+                
+            	gl.glPushMatrix();
+            	gl.glTranslated(rightEyeOffset, 0, eyeZPosition.getValue());
+            	//gl.glFrustum(-1,1,-1,1,-nearZPosition.getValue()+eyeZPosition.getValue(), -farZPosition.getValue()+eyeZPosition.getValue());
+            	gl.glColor3d(1,0,0);
+            	gl.glMultMatrixd(rightEyeinvert.asArray(), 0);           	
+            	glut.glutWireCube(2);
+            	gl.glPopMatrix();
+            }
+            tbc2.applyViewTransformation(drawable); // only the view transformation
+            scene.display( drawable );
         	                               
         } else if ( viewingMode == 6 ) {            
+            
+            
+            gl.glClear(GL2.GL_ACCUM_BUFFER_BIT);
+            gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
+            gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
+            gl.glColorMask(true, false, false, true);
+        	gl.glColor3d(0.85, 0, 0);
+        	gl.glMatrixMode(GL2.GL_PROJECTION);
+            gl.glLoadMatrixd(leftEyematrix.asArray(),0);
+            gl.glMatrixMode(GL2.GL_MODELVIEW);
+            gl.glLoadIdentity();
+            gl.glTranslated(-leftEyeOffset, 0, -eyeZPosition.getValue());
+            tbc2.applyViewTransformation(drawable); // only the view transformation
+            scene.display( drawable );
+//            gl.glAccum(GL2.GL_ACCUM, (float)(1.0/3.0));
+            
+            gl.glClear(GL2.GL_ACCUM_BUFFER_BIT);
+            gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
+            gl.glColorMask(false, false, true, true);
+        	gl.glMatrixMode(GL2.GL_PROJECTION);
+            gl.glLoadMatrixd(rightEyematrix.asArray(),0);
+            gl.glMatrixMode(GL2.GL_MODELVIEW);
+            gl.glLoadIdentity();
+            gl.glTranslated(-rightEyeOffset, 0, -eyeZPosition.getValue());
+            tbc2.applyViewTransformation(drawable); // only the view transformation
+            scene.display( drawable );       
+            
+//            gl.glAccum(GL2.GL_ACCUM, (float)(1.0/3.0));
+//           
+//            gl.glAccum(GL2.GL_RETURN, 1);
         	
-        	// TODO: Objective 7 - draw the anaglyph view using glColouMask
+        } else if ( viewingMode == 7 ) {
         	
-        } else if ( viewingMode == 7 ) {            
+        	int numSamples = samples.getValue();
+        	double apertureSize = aperture.getValue();
         	
-        	// TODO: Bonus Ojbective 8 - draw the anaglyph view with depth of field blur
+        	FastPoissonDisk disk = new FastPoissonDisk();
+        	
+        	gl.glClear(GL2.GL_ACCUM_BUFFER_BIT);
+            gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
+            gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
+            gl.glColorMask(true, false, false, true);
+            
+            for(int i  = 0; i<numSamples; i++) {
+        		Point2d p = new Point2d();
+        		disk.get(p, i, numSamples);
+        		double valueX = p.x*apertureSize+leftEyeOffset;
+        		double valueY = p.y*apertureSize;
+        		//System.out.println(valueX + "," + valueY);
+        		double newWlOffset = focalleftEyeOffsetwl-p.x*apertureSize;
+        		//System.out.println(focalleftEyeOffsetwl);
+        		double newWrOffset = focalleftEyeOffsetwr-p.x*apertureSize;
+        		double newHbOffset = focalleftEyeOffsethb-valueY;
+        		double newHtOffset = focalleftEyeOffsetht-valueY;
+        		
+        		double newNearwl = nearVar*newWlOffset/planeP;
+                double newNearwr = nearVar*newWrOffset/planeP;
+                double newNearhb = nearVar*newHbOffset/planeP;
+                double newNearht= nearVar*newHtOffset/planeP;
+                
+                
+                //prepare frustum
+                gl.glMatrixMode(GL2.GL_PROJECTION);
+            	gl.glPushMatrix();
+            	gl.glLoadIdentity();
+            	gl.glFrustum(newNearwl, newNearwr, newNearhb, newNearht, nearVar, farVar);
+            	FlatMatrix4d newMatrix = new FlatMatrix4d();
+            	FlatMatrix4d newInvert = new FlatMatrix4d();
+            	gl.glGetDoublev(GL2.GL_PROJECTION_MATRIX, newMatrix.asArray(), 0);
+            	gl.glPopMatrix();
+            	newMatrix.reconstitute();
+            	newInvert.getBackingMatrix().invert(newMatrix.getBackingMatrix());
+            	gl.glMatrixMode(GL2.GL_MODELVIEW);	
+                
+            	gl.glMatrixMode(GL2.GL_PROJECTION);
+	            gl.glLoadMatrixd(newMatrix.asArray(),0);
+	            gl.glMatrixMode(GL2.GL_MODELVIEW);
+	            gl.glLoadIdentity();
+	            gl.glTranslated(-valueX, -valueY, -eyeZPosition.getValue()); 
+	            tbc2.applyViewTransformation(drawable); // only the view transformation
+	            scene.display( drawable );
+                if(i==0) {
+                	gl.glAccum(GL2.GL_LOAD,(float)1.0/(float)numSamples);
+                	//System.out.println((float)1.0/(float)numSamples);
+                }
+                else {
+                	gl.glAccum(GL2.GL_ACCUM, (float)1.0/(float)numSamples);
+                }
+        	}
+        	gl.glAccum(GL2.GL_RETURN, 1);
+            
+            gl.glClear(GL2.GL_ACCUM_BUFFER_BIT);
+            gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
+            gl.glColorMask(false, false, true, true);
+            for(int i  = 0; i<numSamples; i++) {
+        		Point2d p = new Point2d();
+        		disk.get(p, i, numSamples);
+        		double valueX = p.x*apertureSize+rightEyeOffset;
+        		double valueY = p.y*apertureSize;
+        		//System.out.println(valueX + "," + valueY);
+        		double newWlOffset = focalrightEyeOffsetwl-p.x*apertureSize;
+        		//System.out.println(focalrightEyeOffsetwl);
+        		double newWrOffset = focalrightEyeOffsetwr-p.x*apertureSize;
+        		double newHbOffset = focalrightEyeOffsethb-valueY;
+        		double newHtOffset = focalrightEyeOffsetht-valueY;
+        		
+        		double newNearwl = nearVar*newWlOffset/planeP;
+                double newNearwr = nearVar*newWrOffset/planeP;
+                double newNearhb = nearVar*newHbOffset/planeP;
+                double newNearht= nearVar*newHtOffset/planeP;
+                
+                
+                //prepare frustum
+                gl.glMatrixMode(GL2.GL_PROJECTION);
+            	gl.glPushMatrix();
+            	gl.glLoadIdentity();
+            	gl.glFrustum(newNearwl, newNearwr, newNearhb, newNearht, nearVar, farVar);
+            	FlatMatrix4d newMatrix = new FlatMatrix4d();
+            	FlatMatrix4d newInvert = new FlatMatrix4d();
+            	gl.glGetDoublev(GL2.GL_PROJECTION_MATRIX, newMatrix.asArray(), 0);
+            	gl.glPopMatrix();
+            	newMatrix.reconstitute();
+            	newInvert.getBackingMatrix().invert(newMatrix.getBackingMatrix());
+            	gl.glMatrixMode(GL2.GL_MODELVIEW);	
+                
+            	gl.glMatrixMode(GL2.GL_PROJECTION);
+	            gl.glLoadMatrixd(newMatrix.asArray(),0);
+	            gl.glMatrixMode(GL2.GL_MODELVIEW);
+	            gl.glLoadIdentity();
+	            gl.glTranslated(-valueX, -valueY, -eyeZPosition.getValue()); 
+	            tbc2.applyViewTransformation(drawable); // only the view transformation
+	            scene.display( drawable );
+                if(i==0) {
+                	gl.glAccum(GL2.GL_LOAD,(float)1.0/(float)numSamples);
+                	//System.out.println((float)1.0/(float)numSamples);
+                }
+                else {
+                	gl.glAccum(GL2.GL_ACCUM, (float)1.0/(float)numSamples);
+                }
+        	}
+        	gl.glAccum(GL2.GL_RETURN, 1);
+        	
+        	
+        	//System.out.println(apertureSize);
+       	 	
+        	
+            	
+
+	        	
         	
         }        
     }
