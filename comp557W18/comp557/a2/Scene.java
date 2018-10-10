@@ -52,7 +52,7 @@ public class Scene {
 		{.75f,1,.75f,1}
 	};
 
-    private void setLights( GLAutoDrawable drawable ) {
+    public void setLights( GLAutoDrawable drawable ) {
     	GL2 gl = drawable.getGL().getGL2();
 		gl.glEnable( GL2.GL_LIGHTING );
 		gl.glEnable( GL2.GL_LIGHT0 );

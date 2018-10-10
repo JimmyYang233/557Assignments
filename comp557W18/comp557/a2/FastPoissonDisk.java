@@ -142,7 +142,7 @@ public class FastPoissonDisk {
 				active.remove(index);
 			}
 		}
-		System.out.println( samples.size() );
+		//System.out.println( samples.size() );
 		
 		// sort the samples in order from center outwards
 		Collections.sort( samples, new Comparator<Point2d>() {
