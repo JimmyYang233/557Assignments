@@ -39,7 +39,7 @@ public class CharacterCreator {
 	
 	// TODO: Objective 6: change default of load from file to true once you start working with xml
 	static BooleanParameter loadFromFile = new BooleanParameter( "Load from file (otherwise by procedure)", true );
-	static JTextField baseFileName = new JTextField("comp557W18/a1data/character");
+	static JTextField baseFileName = new JTextField("comp557F18/a1data/character");
 	static { baseFileName.setName("what is this?"); }
 	
 	/**

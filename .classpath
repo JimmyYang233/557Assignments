@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="comp557W18"/>
+	<classpathentry kind="src" path="comp557F18"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jogl"/>
-	<classpathentry kind="lib" path="comp557W18/mintools.jar"/>
-	<classpathentry kind="lib" path="comp557W18/vecmath.jar"/>
+	<classpathentry kind="lib" path="comp557F18/mintools.jar"/>
+	<classpathentry kind="lib" path="comp557F18/vecmath.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
