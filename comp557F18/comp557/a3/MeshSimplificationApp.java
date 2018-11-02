@@ -147,7 +147,7 @@ public class MeshSimplificationApp implements SceneGraphNode, Interactor {
         gl.glShadeModel( GL2.GL_SMOOTH ); // Enable smooth shading, though everything should be flat!
     }
 
-    private BooleanParameter drawPolySoup = new BooleanParameter( "draw soup mesh (wire frame)", true );    
+    private BooleanParameter drawPolySoup = new BooleanParameter( "draw soup mesh (wire frame)", false );    
     private BooleanParameter drawHEDSMesh = new BooleanParameter( "draw HEDS mesh", true );
     private BooleanParameter cullFace = new BooleanParameter( "cull face", true );
     private BooleanParameter wireFrame = new BooleanParameter( "wire frame", false );    

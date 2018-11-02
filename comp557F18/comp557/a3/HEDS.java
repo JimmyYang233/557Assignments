@@ -37,7 +37,45 @@ public class HEDS {
         halfEdges.clear();
         faces.clear();
         
-        // TODO: Objective 1: create the half edge data structure from the polygon soup    
+        // TODO: Objective 1: create the half edge data structure from the polygon soup  
+        for(int[] face : soup.faceList) {
+        	HalfEdge hf1 = new HalfEdge();
+        	HalfEdge hf2 = new HalfEdge();
+        	HalfEdge hf3 = new HalfEdge();
+        	
+        	hf1.head = soup.vertexList.get(face[0]);
+        	hf2.head = soup.vertexList.get(face[1]);
+        	hf3.head = soup.vertexList.get(face[2]);
+        	
+        	halfEdges.put(face[2] + "," + face[0], hf1);
+        	halfEdges.put(face[0] + "," + face[1], hf2);
+        	halfEdges.put(face[1] + "," + face[2], hf3);
+        	
+        	hf1.next = hf2;
+        	hf2.next = hf3;
+        	hf3.next = hf1;
+        	
+        	Face newFace = new Face(hf1);
+        	newFace.recomputeNormal();
+        	faces.add(newFace);
+        }
+        
+        for(int i = 0; i<soup.vertexList.size();i++) {
+        	int j = 0;
+        	if(i != (soup.vertexList.size()-1)) { //not last vertex, so j is the next one, if last vertex, j = 0;
+        		j = i + 1;
+        	}
+        	HalfEdge hf1 = halfEdges.get(i +"," + j);
+        	HalfEdge hf2 = halfEdges.get(j + "," + i);
+        	hf1.twin = hf2;
+        	hf2.twin = hf1;
+        	
+        	Edge edge = new Edge();
+        	edge.he = hf1;
+        	hf1.e = edge;
+        	hf2.e = edge;
+        }
+        
         
         // TODO: Objective 5: fill your priority queue on load
         
