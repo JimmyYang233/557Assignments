@@ -60,20 +60,14 @@ public class HEDS {
         	faces.add(newFace);
         }
         
-        for(int i = 0; i<soup.vertexList.size();i++) {
-        	int j = 0;
-        	if(i != (soup.vertexList.size()-1)) { //not last vertex, so j is the next one, if last vertex, j = 0;
-        		j = i + 1;
-        	}
-        	HalfEdge hf1 = halfEdges.get(i +"," + j);
-        	HalfEdge hf2 = halfEdges.get(j + "," + i);
-        	hf1.twin = hf2;
-        	hf2.twin = hf1;
-        	
-        	Edge edge = new Edge();
-        	edge.he = hf1;
-        	hf1.e = edge;
-        	hf2.e = edge;
+    	for(String ij : halfEdges.keySet()) {
+    		System.out.println(ij);
+    		String i = ij.substring(0,1);
+    		String j = ij.substring(2);
+    		int ii = Integer.parseInt(i);
+    		int jj = Integer.parseInt(j);
+    		halfEdges.get(ii + "," + jj).twin = halfEdges.get(jj +"," + ii);
+    		//System.out.println(ii + ", " + jj);
         }
         
         
