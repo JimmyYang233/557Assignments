@@ -58,18 +58,22 @@ public class HEDS {
         	Face newFace = new Face(hf1);
         	newFace.recomputeNormal();
         	faces.add(newFace);
+        	
+        	hf1.leftFace = newFace;
+        	hf2.leftFace = newFace;
+        	hf3.leftFace = newFace;
         }
         
     	for(String ij : halfEdges.keySet()) {
-    		System.out.println(ij);
-    		String i = ij.substring(0,1);
-    		String j = ij.substring(2);
+    		String[] ijs = ij.split(",");
+    		String i = ijs[0];
+    		String j = ijs[1];
     		int ii = Integer.parseInt(i);
     		int jj = Integer.parseInt(j);
     		halfEdges.get(ii + "," + jj).twin = halfEdges.get(jj +"," + ii);
     		//System.out.println(ii + ", " + jj);
         }
-        
+		//halfEdges.clear();
         
         // TODO: Objective 5: fill your priority queue on load
         
@@ -82,7 +86,42 @@ public class HEDS {
     
     
     // TODO: Objective 2, 3, 4, 5: write methods to help with collapse, and for checking topological problems
-    
+    public void collapse(HalfEdge he, Vertex vt) {
+    	HalfEdge twin = he.twin;
+    	HalfEdge A = he.next;
+    	HalfEdge B  = he.next.next;
+    	HalfEdge C = twin.next;
+    	HalfEdge D = twin.next.next;
+    	HalfEdge loop = C.twin;
+    	do {
+    		loop.head = vt;
+    		loop = loop.next.twin;
+    	}while(loop!=C.twin);
+    	
+    	loop = he;
+    	do {
+    		loop.head = vt;
+    		loop = loop.next.twin;
+    	}while(loop!=he);
+    	
+    	B.head = vt;
+    	D.head = vt;
+    	A.twin.twin = B.twin;
+    	B.twin.twin = A.twin;
+    	C.twin.twin = D.twin;
+    	D.twin.twin = C.twin;
+    	Face f1 = A.leftFace;
+    	Face f2 = B.leftFace;
+    	faces.remove(f1);
+    	faces.remove(f2);
+//    	halfEdges.remove(he);
+//    	halfEdges.remove(twin);
+//    	halfEdges.remove(A);
+//    	halfEdges.remove(B);
+//    	halfEdges.remove(C);
+//    	halfEdges.remove(D);
+    	
+    }
     
     /**
 	 * Need to know both verts before the collapse, but this information is actually 

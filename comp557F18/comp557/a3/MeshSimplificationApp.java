@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
+import javax.vecmath.Point3d;
 
 import com.jogamp.opengl.DebugGL2;
 import com.jogamp.opengl.GL;
@@ -224,6 +225,12 @@ public class MeshSimplificationApp implements SceneGraphNode, Interactor {
                 		} while ( true );
                 	} else {
                     	// TODO: Objective 2: handle C keypress to collapse an edge
+                		Vertex vt1 = currentHE.head;
+                		Vertex vt2 = currentHE.twin.head;
+                		Vertex middlePoint = new Vertex();
+                		middlePoint.p = new Point3d((vt1.p.x+vt2.p.x)/2, (vt1.p.y+vt2.p.y)/2, (vt1.p.z+vt2.p.z)/2);
+                		heds.collapse(currentHE, middlePoint);
+                		currentHE = currentHE.next.twin;
                 	}
                 } else if ( e.getKeyCode() == KeyEvent.VK_G ) {
                 	// TODO: Objective 5: handle G keypress to set the halfedge to the best candidate
