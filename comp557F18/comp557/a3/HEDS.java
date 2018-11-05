@@ -87,33 +87,40 @@ public class HEDS {
     
     // TODO: Objective 2, 3, 4, 5: write methods to help with collapse, and for checking topological problems
     public void collapse(HalfEdge he, Vertex vt) {
-    	HalfEdge twin = he.twin;
-    	HalfEdge A = he.next;
-    	HalfEdge B  = he.next.next;
-    	HalfEdge C = twin.next;
-    	HalfEdge D = twin.next.next;
-    	HalfEdge loop = C.twin;
-    	do {
-    		loop.head = vt;
-    		loop = loop.next.twin;
-    	}while(loop!=C.twin);
+    	if(faces.size()<=4) {
+    		System.out.println("There are only 4 faces, can not collapse anymore");
+    		return;
+    	}
+    	else {
+    		HalfEdge twin = he.twin;
+        	HalfEdge A = he.next;
+        	HalfEdge B  = he.next.next;
+        	HalfEdge C = twin.next;
+        	HalfEdge D = twin.next.next;
+        	HalfEdge loop = C.twin;
+        	do {
+        		loop.head = vt;
+        		loop = loop.next.twin;
+        	}while(loop!=C.twin);
+        	
+        	loop = he;
+        	do {
+        		loop.head = vt;
+        		loop = loop.next.twin;
+        	}while(loop!=he);
+        	
+        	B.head = vt;
+        	D.head = vt;
+        	A.twin.twin = B.twin;
+        	B.twin.twin = A.twin;
+        	C.twin.twin = D.twin;
+        	D.twin.twin = C.twin;
+        	Face f1 = A.leftFace;
+        	Face f2 = B.leftFace;
+        	faces.remove(f1);
+        	faces.remove(f2);
+    	}
     	
-    	loop = he;
-    	do {
-    		loop.head = vt;
-    		loop = loop.next.twin;
-    	}while(loop!=he);
-    	
-    	B.head = vt;
-    	D.head = vt;
-    	A.twin.twin = B.twin;
-    	B.twin.twin = A.twin;
-    	C.twin.twin = D.twin;
-    	D.twin.twin = C.twin;
-    	Face f1 = A.leftFace;
-    	Face f2 = B.leftFace;
-    	faces.remove(f1);
-    	faces.remove(f2);
 //    	halfEdges.remove(he);
 //    	halfEdges.remove(twin);
 //    	halfEdges.remove(A);
