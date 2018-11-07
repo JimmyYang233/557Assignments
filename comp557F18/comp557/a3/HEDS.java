@@ -48,6 +48,9 @@ public class HEDS {
         	hf1.head = soup.vertexList.get(face[0]);
         	hf2.head = soup.vertexList.get(face[1]);
         	hf3.head = soup.vertexList.get(face[2]);
+        	hf1.head.halfEdges.add(hf1);
+        	hf2.head.halfEdges.add(hf2);
+        	hf3.head.halfEdges.add(hf3);
         	
         	halfEdges.put(face[2] + "," + face[0], hf1);
         	halfEdges.put(face[0] + "," + face[1], hf2);
@@ -68,10 +71,18 @@ public class HEDS {
     		int ii = Integer.parseInt(i);
     		int jj = Integer.parseInt(j);
     		halfEdges.get(ii + "," + jj).twin = halfEdges.get(jj +"," + ii);
-    		//System.out.println(ii + ", " + jj);
         }
-		//halfEdges.clear();
-        
+    	
+    	
+        /**get Q of all Vertices */
+    	for(Vertex vertex : soup.vertexList) {
+    		Matrix4d QQ = new Matrix4d();
+    		for(HalfEdge he : vertex.halfEdges) {
+    			QQ.add(he.leftFace.K);
+    		}
+    		vertex.Q = QQ;
+    	}
+    	
         // TODO: Objective 5: fill your priority queue on load
         
     }
@@ -220,31 +231,6 @@ public class HEDS {
     	Vertex vi = he.head;
     	Vertex vj = he.twin.head;
     	
-    	Set<Face> viFaces = new HashSet<Face>();
-    	HalfEdge loop = he;
-    	do {
-    		viFaces.add(loop.leftFace);
-    		loop = loop.next.twin;
-    	}while(loop!=he);
-    	
-    	Set<Face> vjFaces = new HashSet<Face>();
-    	loop = he.twin;
-    	do {
-    		vjFaces.add(loop.leftFace);
-    		loop = loop.next.twin;
-    	}while(loop!=he.twin);
-    	
-    	Matrix4d Qi = new Matrix4d();
-    	for(Face facei : viFaces) {
-    		Qi.add(facei.K);
-    	}
-    	vi.Q = Qi;
-    	
-    	Matrix4d Qj = new Matrix4d();
-    	for(Face facej: vjFaces) {
-    		Qj.add(facej.K);
-    	}
-    	vj.Q =  Qj;
     	
     	Vertex m = getMiddlePoint(vi, vj);
     	double Qreg44 = m.p.x*m.p.x+m.p.y*m.p.y + m.p.z*m.p.z;
@@ -256,8 +242,8 @@ public class HEDS {
     	});
     	Qreg.mul(0.01);
     	Matrix4d totalQ = new Matrix4d();
-    	totalQ.add(Qi);
-    	totalQ.add(Qj);
+    	totalQ.add(vi.Q);
+    	totalQ.add(vj.Q);
     	totalQ.add(Qreg);
     	
     	Matrix3d A = new Matrix3d(new double[]{
