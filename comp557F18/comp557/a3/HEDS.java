@@ -64,13 +64,21 @@ public class HEDS {
         	faces.add(newFace);
         }
         
+        
+        /** get the twin of each vertex and gives them Edge.*/
     	for(String ij : halfEdges.keySet()) {
     		String[] ijs = ij.split(",");
     		String i = ijs[0];
     		String j = ijs[1];
     		int ii = Integer.parseInt(i);
     		int jj = Integer.parseInt(j);
-    		halfEdges.get(ii + "," + jj).twin = halfEdges.get(jj +"," + ii);
+    		HalfEdge he1 = halfEdges.get(ii + "," + jj);
+    		HalfEdge he2 = halfEdges.get(jj +"," + ii);
+    		he1.twin = he2;
+			Edge edge = new Edge();
+			edge.he = he1;
+			he1.e = edge;
+			he2.e = edge;
         }
     	
     	
@@ -83,6 +91,11 @@ public class HEDS {
     		vertex.Q = QQ;
     	}
     	
+    	for(Face face : faces) {
+    		face.he.e.recompute();
+    		face.he.next.e.recompute();
+    		face.he.prev().e.recompute();
+    	}
         // TODO: Objective 5: fill your priority queue on load
         
     }
@@ -100,7 +113,7 @@ public class HEDS {
      * @param v2
      * @return
      */
-    public Vertex getMiddlePoint(Vertex v1, Vertex v2) {
+    public static Vertex getMiddlePoint(Vertex v1, Vertex v2) {
     	Vertex middlePoint = new Vertex();
 		middlePoint.p = new Point3d((v1.p.x+v2.p.x)/2, (v1.p.y+v2.p.y)/2, (v1.p.z+v2.p.z)/2);
 		return middlePoint;
@@ -232,35 +245,10 @@ public class HEDS {
     	Vertex vj = he.twin.head;
     	
     	
-    	Vertex m = getMiddlePoint(vi, vj);
-    	double Qreg44 = m.p.x*m.p.x+m.p.y*m.p.y + m.p.z*m.p.z;
-    	Matrix4d Qreg = new Matrix4d(new double[]{
-    		1,0,0,-m.p.x,
-    		0,1,0,-m.p.y,
-    		0,0,1,-m.p.z,
-    		-m.p.x,-m.p.y,-m.p.z, Qreg44
-    	});
-    	Qreg.mul(0.01);
-    	Matrix4d totalQ = new Matrix4d();
-    	totalQ.add(vi.Q);
-    	totalQ.add(vj.Q);
-    	totalQ.add(Qreg);
     	
-    	Matrix3d A = new Matrix3d(new double[]{
-    		totalQ.m00, totalQ.m01, totalQ.m02,
-    		totalQ.m10, totalQ.m11, totalQ.m12,
-    		totalQ.m20, totalQ.m21, totalQ.m22
-    	});
     	
-    	Point3d b = new Point3d(new double[] {
-    		-totalQ.m03, -totalQ.m13, -totalQ.m23	
-    	});
-    	A.invert();
-    	Vertex result = new Vertex();
-    	result.p.x = A.m00*b.x+A.m01*b.y+A.m02*b.z;
-    	result.p.y = A.m10*b.x+A.m11*b.y+A.m12*b.z;
-    	result.p.z = A.m20*b.x+A.m21*b.y+A.m22*b.z;
-    	return result;
+    	
+    	return null;
     }
     
     /**
