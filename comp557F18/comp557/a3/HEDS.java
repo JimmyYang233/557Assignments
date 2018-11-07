@@ -87,8 +87,7 @@ public class HEDS {
     
     // TODO: Objective 2, 3, 4, 5: write methods to help with collapse, and for checking topological problems
     public void collapse(HalfEdge he, Vertex vt) {
-    	if(faces.size()<=4) {
-    		System.out.println("There are only 4 faces, can not collapse anymore");
+    	if(isTetrahedron()) {
     		return;
     	}
     	else {
@@ -116,18 +115,59 @@ public class HEDS {
         	C.twin.twin = D.twin;
         	D.twin.twin = C.twin;
         	Face f1 = A.leftFace;
-        	Face f2 = B.leftFace;
+        	Face f2 = C.leftFace;
         	faces.remove(f1);
         	faces.remove(f2);
     	}
+    	if(causeTopologicalProblem(he.next.twin, vt)) {
+    		System.out.println("Topology Problem!!");
+    		//TO-DO undo collapse. 
+    	}
+    }
+    
+    public boolean isTetrahedron() {
+    	if(faces.size()<=4) {
+    		System.out.println("There are only 4 faces, can not collapse anymore");
+    		return true;
+    	}
+    	return false;
+    }
+    
+    
+    public boolean causeTopologicalProblem(HalfEdge he, Vertex vt) {
+    	if(he.head!=vt) {
+    		he = he.twin;
+    	}
+    	HalfEdge loop = he;
+    	do {
+    		int count = numberOfCommonAdjacantVertices(loop);
+    		if(count!=2) {
+    			System.out.println("Huston we got a problem, there are 1-rings edges vertices with " + count + " number of vertices in common. ");
+    			return true;
+    		}
+    		loop = loop.next.twin;
+    	}while(loop!=he);
     	
-//    	halfEdges.remove(he);
-//    	halfEdges.remove(twin);
-//    	halfEdges.remove(A);
-//    	halfEdges.remove(B);
-//    	halfEdges.remove(C);
-//    	halfEdges.remove(D);
-    	
+    	return false;	
+    }
+    
+    public int numberOfCommonAdjacantVertices(HalfEdge he) {
+    	HalfEdge loop = he;
+    	Set<Vertex> v1Adjacants= new HashSet<Vertex>();
+    	do {
+    		v1Adjacants.add(loop.twin.head);
+    		loop = loop.next.twin;
+    	}while(loop!=he);
+    	int count = 0;
+    	loop = he.twin;
+    	do {
+    		Vertex current = loop.twin.head;
+    		if(v1Adjacants.contains(current)) {
+    			count++;
+    		}
+    		loop = loop.next.twin;
+    	}while(loop!=he.twin);
+    	return count;
     }
     
     /**
