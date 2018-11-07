@@ -46,8 +46,16 @@ public class Face {
         v2.sub(p2,p1);
         n.cross( v1,v2 );
         
+        
         // TODO: Objective 4: you might compute the plane and matrix K for the quadric error metric here (or you could do it elsewhere)
-    	        
+        double D = -(n.x*p0.x+n.y*p0.y+n.z*p0.z);
+        p = new Vector4d(n.x, n.y, n.z, D);
+        K = new Matrix4d(new double[] {
+        		p.x*p.x, p.x*p.y, p.x*p.z, p.x*p.w,
+        		p.y*p.x, p.y*p.y, p.y*p.z, p.y*p.w,
+        		p.z*p.x, p.z*p.y, p.z*p.z, p.z*p.w,
+        		p.w*p.x, p.w*p.y, p.w*p.z, p.w*p.w,
+        });
     }
     
 }

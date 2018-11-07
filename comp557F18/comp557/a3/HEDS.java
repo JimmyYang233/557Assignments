@@ -56,12 +56,7 @@ public class HEDS {
         	hf3.next = hf1;
         	
         	Face newFace = new Face(hf1);
-        	newFace.recomputeNormal();
         	faces.add(newFace);
-        	
-        	hf1.leftFace = newFace;
-        	hf2.leftFace = newFace;
-        	hf3.leftFace = newFace;
         }
         
     	for(String ij : halfEdges.keySet()) {
