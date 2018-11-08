@@ -1,8 +1,12 @@
 package comp557.a3;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -23,6 +27,8 @@ public class HEDS {
 
     /** List of faces */
     Set<Face> faces = new HashSet<Face>();
+    
+    PriorityQueue<Edge> edges = new PriorityQueue<Edge>();
     
     /**
      * Constructs an empty mesh (used when building a mesh with subdivision)
@@ -65,7 +71,7 @@ public class HEDS {
         }
         
         
-        /** get the twin of each vertex and gives them Edge.*/
+        /** get the twin of each halfEdge and gives them Edge.*/
     	for(String ij : halfEdges.keySet()) {
     		String[] ijs = ij.split(",");
     		String i = ijs[0];
@@ -90,14 +96,19 @@ public class HEDS {
     		}
     		vertex.Q = QQ;
     	}
-    	
-    	for(Face face : faces) {
-    		face.he.e.recompute();
-    		face.he.next.e.recompute();
-    		face.he.prev().e.recompute();
+    	// TODO: Objective 5: fill your priority queue on load
+    	Collection<HalfEdge> theHalfEdges = halfEdges.values(); 
+    	for(HalfEdge he : theHalfEdges) {
+    		he.e.recompute();
+    		if(!edges.contains(he.e)&&!causeTopologicalProblem(he)) {
+    			edges.add(he.e);
+    		}
     	}
-        // TODO: Objective 5: fill your priority queue on load
-        
+        System.out.println("Total of " + edges.size() + " edges. " );
+        int size = edges.size();
+        for(int i = 0; i<size; i++) {
+        	//System.out.println(i + ", " + edges.remove().error);
+        }
     }
 
     /**
@@ -139,42 +150,71 @@ public class HEDS {
      */
     public void collapse(HalfEdge he, Vertex vt) {
     	if(isTetrahedron()) {
+    		edges.clear();
+    		return;
+    	}
+    	else if(causeTopologicalProblem(he)) {
+    		System.out.println("Topology Problem!!");
     		return;
     	}
     	else {
-    		undoList.add(he);
-    		HalfEdge twin = he.twin;
-        	HalfEdge A = he.next;
-        	HalfEdge B  = he.next.next;
-        	HalfEdge C = twin.next;
-        	HalfEdge D = twin.next.next;
-        	HalfEdge loop = C.twin;
-        	do {
-        		loop.head = vt;
-        		loop = loop.next.twin;
-        	}while(loop!=B);
-        	
-        	loop = A.twin;
-        	do {
-        		loop.head = vt;
-        		loop = loop.next.twin;
-        	}while(loop!=D);
-        	
-        	B.head = vt;
-        	D.head = vt;
-        	A.twin.twin = B.twin;
-        	B.twin.twin = A.twin;
-        	C.twin.twin = D.twin;
-        	D.twin.twin = C.twin;
-        	Face f1 = A.leftFace;
-        	Face f2 = C.leftFace;
-        	faces.remove(f1);
-        	faces.remove(f2);
-    	}
-    	if(causeTopologicalProblem(he.next.twin, vt)) {
-    		System.out.println("Topology Problem!!");
-    		undoCollapse();
-    	}
+    		doCollapse(he, vt);
+    	}    	
+    	edges.remove(he.e);
+    	System.out.println("Total of " + edges.size() + " edges. " );
+    }
+    
+    public void doCollapse(HalfEdge he, Vertex vt) {
+    	undoList.add(he);
+    	vt.Q.add(he.head.Q);
+    	vt.Q.add(he.twin.head.Q);
+		HalfEdge twin = he.twin;
+    	HalfEdge A = he.next;
+    	HalfEdge B  = he.next.next;
+    	HalfEdge C = twin.next;
+    	HalfEdge D = twin.next.next;
+    	HalfEdge loop = C.twin;
+    	do {
+    		loop.head = vt;
+    		Edge edge = loop.e;
+    		if(edges.contains(edge)) {
+    			edges.remove(edge);
+    		}    		
+    		loop = loop.next.twin;
+    	}while(loop!=B);
+    	
+    	loop = A.twin;
+    	do {
+    		loop.head = vt;
+    		Edge edge = loop.e;
+    		if(edges.contains(edge)) {
+    			edges.remove(edge);
+    		}
+    		loop = loop.next.twin;
+    	}while(loop!=D);
+    	
+    	B.head = vt;
+    	D.head = vt;
+    	A.twin.twin = B.twin;
+    	B.twin.twin = A.twin;
+    	C.twin.twin = D.twin;
+    	D.twin.twin = C.twin;
+    	Face f1 = A.leftFace;
+    	Face f2 = C.leftFace;
+    	faces.remove(f1);
+    	faces.remove(f2);
+    	loop = A.twin;
+    	do {
+    		Edge edge = new Edge();
+    		edge.he = loop;
+    		loop.e = edge;
+    		loop.twin.e = edge;
+    		edge.recompute();
+    		if(!causeTopologicalProblem(loop)) {
+    			edges.add(edge);
+    		}
+    		loop = loop.next.twin;
+    	}while(loop!=A.twin);
     }
     
     /**
@@ -195,19 +235,12 @@ public class HEDS {
      * @param vt the vertex to check
      * @return true if it has topological problem, false otherwise
      */
-    public boolean causeTopologicalProblem(HalfEdge he, Vertex vt) {
-    	if(he.head!=vt) {
-    		he = he.twin;
-    	}
-    	HalfEdge loop = he;
-    	do {
-    		int count = numberOfCommonAdjacantVertices(loop);
+    public boolean causeTopologicalProblem(HalfEdge he) {
+    		int count = numberOfCommonAdjacantVertices(he);
     		if(count!=2) {
     			System.out.println("Huston we got a problem, there are 1-rings edges vertices with " + count + " number of vertices in common. ");
     			return true;
     		}
-    		loop = loop.next.twin;
-    	}while(loop!=he);
     	
     	return false;	
     }
@@ -224,6 +257,7 @@ public class HEDS {
     		v1Adjacants.add(loop.twin.head);
     		loop = loop.next.twin;
     	}while(loop!=he);
+    	System.out.println(v1Adjacants.size());
     	int count = 0;
     	loop = he.twin;
     	do {
@@ -234,22 +268,6 @@ public class HEDS {
     		loop = loop.next.twin;
     	}while(loop!=he.twin);
     	return count;
-    }
-    
-    /**
-     * find the optimal regularized vertex position of edge he. 
-     * @param he
-     * @return regularized vertex position that can be used to collapse. 
-     */
-    public Vertex quadricErrorMetric(HalfEdge he) {
-    	Vertex vi = he.head;
-    	Vertex vj = he.twin.head;
-    	
-    	
-    	
-    	
-    	
-    	return null;
     }
     
     /**
@@ -349,6 +367,15 @@ public class HEDS {
             } while ( e != he );
         }
     }
+
+	public boolean noMoreCollapse() {
+		if(edges.size()<=0) {
+			return true;
+		}
+		else {
+			return false;
+		}	
+	}
     
     
     

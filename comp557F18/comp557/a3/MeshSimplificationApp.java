@@ -67,7 +67,14 @@ public class MeshSimplificationApp implements SceneGraphNode, Interactor {
         soup = new PolygonSoup( filename );
         heds = new HEDS( soup );
         if ( heds.faces.size() > 0 ) {
-        	currentHE = heds.faces.iterator().next().he;
+        	if(heds.edges.size()>0) {
+        		currentHE = heds.edges.peek().he;
+        	}
+        	else {	
+        		currentHE = heds.faces.iterator().next().he;
+        	}
+        	
+        	
         }
     }
 
@@ -221,16 +228,26 @@ public class MeshSimplificationApp implements SceneGraphNode, Interactor {
                 	if ( e.isShiftDown() ) {
                 		do {
                         	// TODO: Objective 2: handle C keypress to collapse until it is impossible to make further simplificaitons
-                			// if ( noMoreCollapse ) break;
+            				if ( heds.noMoreCollapse() ) break;
+            				Edge edge = heds.edges.peek();
+            				heds.collapse(edge.he, edge.getVertex());
                 		} while ( true );
                 	} else {
                     	// TODO: Objective 2: handle C keypress to collapse an edge
                 		Vertex point = currentHE.e.getVertex();
                 		heds.collapse(currentHE, point);
-                		currentHE = currentHE.next.twin;
+                		if(heds.edges.size()>0) {
+                			currentHE = heds.edges.peek().he;
+                		}
+                		else {
+                			currentHE = currentHE.next.twin;
+                		}
                 	}
                 } else if ( e.getKeyCode() == KeyEvent.VK_G ) {
                 	// TODO: Objective 5: handle G keypress to set the halfedge to the best candidate
+                	if(heds.edges.size()>0) {
+            			currentHE = heds.edges.peek().he;
+            		}
                 } else if ( e.getKeyCode() == KeyEvent.VK_Z ) {
                 	heds.undoCollapse();
                 } else if ( e.getKeyCode() ==  KeyEvent.VK_Y ) {
