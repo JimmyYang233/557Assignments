@@ -225,7 +225,7 @@ public class MeshSimplificationApp implements SceneGraphNode, Interactor {
                 		} while ( true );
                 	} else {
                     	// TODO: Objective 2: handle C keypress to collapse an edge
-                		Vertex point = heds.quadricErrorMetric(currentHE);
+                		Vertex point = currentHE.e.getVertex();
                 		heds.collapse(currentHE, point);
                 		currentHE = currentHE.next.twin;
                 	}

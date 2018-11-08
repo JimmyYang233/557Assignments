@@ -142,6 +142,7 @@ public class HEDS {
     		return;
     	}
     	else {
+    		undoList.add(he);
     		HalfEdge twin = he.twin;
         	HalfEdge A = he.next;
         	HalfEdge B  = he.next.next;
@@ -151,13 +152,13 @@ public class HEDS {
         	do {
         		loop.head = vt;
         		loop = loop.next.twin;
-        	}while(loop!=C.twin);
+        	}while(loop!=B);
         	
-        	loop = he;
+        	loop = A.twin;
         	do {
         		loop.head = vt;
         		loop = loop.next.twin;
-        	}while(loop!=he);
+        	}while(loop!=D);
         	
         	B.head = vt;
         	D.head = vt;
@@ -172,7 +173,7 @@ public class HEDS {
     	}
     	if(causeTopologicalProblem(he.next.twin, vt)) {
     		System.out.println("Topology Problem!!");
-    		//TO-DO undo collapse. 
+    		undoCollapse();
     	}
     }
     
@@ -269,8 +270,33 @@ public class HEDS {
    
     	HalfEdge he = undoList.removeLast();
 
-    	// TODO: Objective 6: undo the last collapse
-    	// be sure to put the information on the redo list so you can redo the collapse too!
+    	HalfEdge twin = he.twin;
+    	HalfEdge A = he.next;
+    	HalfEdge B  = he.next.next;
+    	HalfEdge C = twin.next;
+    	HalfEdge D = twin.next.next;
+    	Vertex vi = he.head;
+    	Vertex vj = he.twin.head;
+    	A.twin.twin = A;
+    	B.twin.twin = B;
+    	C.twin.twin = C;
+    	D.twin.twin = D;
+    	HalfEdge loop = he.twin;
+    	do {
+    		loop.head = vj;
+    		loop = loop.next.twin;
+    	}while(loop!=he.twin);
+    	
+    	loop = he;
+    	do {
+    		loop.head = vi;
+    		loop = loop.next.twin;
+    	}while(loop!=he);
+    	
+    	Face f1 = A.leftFace;
+    	Face f2 = C.leftFace;
+    	faces.add(f1);
+    	faces.add(f2);
     }
     
     void redoCollapse() {

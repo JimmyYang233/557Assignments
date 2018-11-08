@@ -80,4 +80,12 @@ public class Edge implements Comparable<Edge> {
     	error = tmp.x*v.x+tmp.y*v.y+tmp.z*v.z+tmp.w*v.w;
 	}
 	
+	public Vertex getVertex() {
+		Vertex vv = new Vertex();
+		vv.p.x = v.x;
+		vv.p.y = v.y;
+		vv.p.z = v.z;
+		return vv;
+	}
+	
 }
