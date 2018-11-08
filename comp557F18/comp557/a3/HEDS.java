@@ -310,6 +310,21 @@ public class HEDS {
             } while ( e != he );
             gl.glEnd();
         }
+        
+        for ( Face face : faces ) {
+            HalfEdge he = face.he;
+            HalfEdge e = he;
+            do {
+            	gl.glPointSize(5);
+                gl.glBegin(GL2.GL_POINTS);
+                //System.out.println(e.e.v.x + ", " + e.e.v.y + ", " + e.e.v.z);
+                gl.glVertex3d(e.e.v.x, e.e.v.y, e.e.v.z);
+                gl.glEnd();
+            } while ( e != he );
+        }
     }
+    
+    
+    
 
 }

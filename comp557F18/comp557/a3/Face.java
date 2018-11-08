@@ -45,6 +45,7 @@ public class Face {
         v1.sub(p1,p0);
         v2.sub(p2,p1);
         n.cross( v1,v2 );
+        n.normalize();
         
         
         // TODO: Objective 4: you might compute the plane and matrix K for the quadric error metric here (or you could do it elsewhere)

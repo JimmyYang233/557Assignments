@@ -75,11 +75,6 @@ public class HalfEdge {
         gl.glVertex3d( x, y, z );        
         gl.glEnd();
         gl.glLineWidth(1);
-        gl.glPointSize(20);
-        gl.glBegin(GL2.GL_POINTS);
-        System.out.println(e.v.x + ", " + e.v.y + ", " + e.v.z);
-        gl.glVertex3d(e.v.x, e.v.y, e.v.z);
-        gl.glEnd();
         gl.glEnable( GL2.GL_LIGHTING );
     }
     
