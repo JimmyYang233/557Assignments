@@ -141,6 +141,9 @@ public class MeshSimplificationApp implements SceneGraphNode, Interactor {
         	heds.displayError(drawable);
         }
         heds.lamda = regularizationWeight.getValue();
+        for(Edge edge : heds.edges) {
+        	edge.recompute(heds.lamda);
+        }
         gl.glColor4f(1,1,1,1);
         EasyViewer.beginOverlay(drawable);
         EasyViewer.printTextLines(drawable, soupFiles[whichSoup] + " Faces = " + heds.faces.size(), 10,20,15, GLUT.BITMAP_8_BY_13 );
