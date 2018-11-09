@@ -34,7 +34,7 @@ public class Edge implements Comparable<Edge> {
 		return 0;
 	}
 	
-	public void recompute() {
+	public void recompute(double reg) {
 		Vertex vi = he.head;
 		Vertex vj = he.twin.head;
 		
@@ -47,7 +47,7 @@ public class Edge implements Comparable<Edge> {
     		0,0,1,-m.p.z,
     		-m.p.x,-m.p.y,-m.p.z, Qreg44
     	});
-    	Qreg.mul(0.01);
+    	Qreg.mul(reg);
     	Matrix4d totalQ = new Matrix4d();
     	totalQ.add(vi.Q);
     	totalQ.add(vj.Q);

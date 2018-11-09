@@ -24,6 +24,8 @@ import com.jogamp.opengl.GLAutoDrawable;
  * for easy display of geometry.
  */
 public class HEDS {
+	
+	double lamda = 0.01;
 
     /** List of faces */
     Set<Face> faces = new HashSet<Face>();
@@ -99,7 +101,7 @@ public class HEDS {
     	// TODO: Objective 5: fill your priority queue on load
     	Collection<HalfEdge> theHalfEdges = halfEdges.values(); 
     	for(HalfEdge he : theHalfEdges) {
-    		he.e.recompute();
+    		he.e.recompute(lamda);
     		if(!edges.contains(he.e)&&!causeTopologicalProblem(he)) {
     			edges.add(he.e);
     		}
@@ -212,7 +214,7 @@ public class HEDS {
     		edge.he = loop;
     		loop.e = edge;
     		loop.twin.e = edge;
-    		edge.recompute();
+    		edge.recompute(lamda);
     		if(!causeTopologicalProblem(loop)) {
     			edges.add(edge);
     		}
@@ -439,17 +441,7 @@ public class HEDS {
             gl.glEnd();
         }
         
-//        for ( Face face : faces ) {
-//            HalfEdge he = face.he;
-//            HalfEdge e = he;
-//            do {
-//            	gl.glPointSize(5);
-//                gl.glBegin(GL2.GL_POINTS);
-//                //System.out.println(e.e.v.x + ", " + e.e.v.y + ", " + e.e.v.z);
-//                gl.glVertex3d(e.e.v.x, e.e.v.y, e.e.v.z);
-//                gl.glEnd();
-//            } while ( e != he );
-//        }
+
     }
 
 	public boolean noMoreCollapse() {
@@ -460,8 +452,20 @@ public class HEDS {
 			return false;
 		}	
 	}
-    
-    
-    
 
+	public void displayError(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+	  for ( Face face : faces ) {
+		  HalfEdge he = face.he;
+		  HalfEdge e = he;
+		  do {
+		  	gl.glPointSize(5);
+		      gl.glBegin(GL2.GL_POINTS);
+		      //System.out.println(e.e.v.x + ", " + e.e.v.y + ", " + e.e.v.z);
+		      gl.glVertex3d(e.e.v.x, e.e.v.y, e.e.v.z);
+		      gl.glEnd();
+		  } while ( e != he );
+	  }
+	}
+    
 }

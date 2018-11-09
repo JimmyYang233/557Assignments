@@ -92,7 +92,7 @@ public class MeshSimplificationApp implements SceneGraphNode, Interactor {
         	// don't go all the way to zero...  Just 1%
         	double s = 0.99 * LOD.getValue() + 0.01;
         	s = s*s; // or could do Math.pow( s, factor ) to adjust how the scaling goes with LOD, but quadratic seems good 
-        	//gl.glScaled( s, s, s );
+        	gl.glScaled( s, s, s );
         }
         
         if ( !wireFrame.getValue()) {
@@ -137,6 +137,10 @@ public class MeshSimplificationApp implements SceneGraphNode, Interactor {
             currentHE.display( drawable );
         }
         
+        if (drawEdgeErrors.getValue()) {
+        	heds.displayError(drawable);
+        }
+        heds.lamda = regularizationWeight.getValue();
         gl.glColor4f(1,1,1,1);
         EasyViewer.beginOverlay(drawable);
         EasyViewer.printTextLines(drawable, soupFiles[whichSoup] + " Faces = " + heds.faces.size(), 10,20,15, GLUT.BITMAP_8_BY_13 );
