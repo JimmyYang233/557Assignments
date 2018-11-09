@@ -104,7 +104,7 @@ public class HEDS {
     			edges.add(he.e);
     		}
     	}
-        System.out.println("Total of " + edges.size() + " edges. " );
+        //System.out.println("Total of " + edges.size() + " edges. " );
         int size = edges.size();
         for(int i = 0; i<size; i++) {
         	//System.out.println(i + ", " + edges.remove().error);
@@ -154,18 +154,18 @@ public class HEDS {
     		return;
     	}
     	else if(causeTopologicalProblem(he)) {
-    		System.out.println("Topology Problem!!");
+    		//System.out.println("Topology Problem!!");
     	}
     	else {
     		doCollapse(he, vt);
     	}    	
     	edges.remove(he.e);
-    	for(Edge edge : edges) {
-			if(causeTopologicalProblem(edge.he)) {
-				edges.remove(edge);
-			}
-		}
-    	System.out.println("Total of " + edges.size() + " edges. " );
+//    	for(Edge edge : edges) {
+//			if(causeTopologicalProblem(edge.he)) {
+//				edges.remove(edge);
+//			}
+//		}
+    	//System.out.println("Total of " + edges.size() + " edges. " );
     }
     
     public void doCollapse(HalfEdge he, Vertex vt) {
@@ -261,7 +261,7 @@ public class HEDS {
     		v1Adjacants.add(loop.twin.head);
     		loop = loop.next.twin;
     	}while(loop!=he);
-    	System.out.println(v1Adjacants.size());
+    	//System.out.println(v1Adjacants.size());
     	int count = 0;
     	loop = he.twin;
     	do {
@@ -291,7 +291,7 @@ public class HEDS {
     	if ( undoList.isEmpty() ) return; // ignore the request
    
     	HalfEdge he = undoList.removeLast();
-
+    	
     	HalfEdge twin = he.twin;
     	HalfEdge A = he.next;
     	HalfEdge B  = he.next.next;
@@ -299,38 +299,118 @@ public class HEDS {
     	HalfEdge D = twin.next.next;
     	Vertex vi = he.head;
     	Vertex vj = he.twin.head;
+    	Vertex v = A.twin.head;
+    	
+    	HalfEdge loop = A.twin;
+//    	do {
+//    		Edge edge = loop.e;
+//    		if(edges.contains(edge)) {
+//    			edges.remove(edge);
+//    		}	
+//    		loop = loop.next.twin;
+//    	}while(loop!=A.twin);
+    	
     	A.twin.twin = A;
     	B.twin.twin = B;
     	C.twin.twin = C;
     	D.twin.twin = D;
-    	HalfEdge loop = he.twin;
+    	loop = C.twin;
     	do {
     		loop.head = vj;
+//    		Edge edge = new Edge();
+//    		edge.he = loop;
+//    		loop.e = edge;
+//    		loop.twin.e = edge;
+//    		edge.recompute();
+//    		if(!edges.contains(edge)) {
+//    			edges.add(edge);
+//    		}  
     		loop = loop.next.twin;
     	}while(loop!=he.twin);
     	
-    	loop = he;
+    	loop = A.twin;
     	do {
     		loop.head = vi;
+//    		Edge edge = new Edge();
+//    		edge.he = loop;
+//    		loop.e = edge;
+//    		loop.twin.e = edge;
+//    		edge.recompute();
+//    		if(!edges.contains(edge)) {
+//    			edges.add(edge);
+//    		}    		
     		loop = loop.next.twin;
     	}while(loop!=he);
+    	//edges.add(he.e);
     	
     	Face f1 = A.leftFace;
     	Face f2 = C.leftFace;
     	faces.add(f1);
     	faces.add(f2);
-    }
+    	//System.out.println("Total of " + edges.size() + " edges. " );
+    	 
+    	 redoListHalfEdge.add(he);
+    	 redoListVertex.add(v);
+        }
     
     void redoCollapse() {
     	if ( redoListHalfEdge.isEmpty() ) return; // ignore the request
     	
     	HalfEdge he = redoListHalfEdge.removeLast();
-    	Vertex v = redoListVertex.removeLast();
+    	Vertex vt = redoListVertex.removeLast();
     	
     	undoList.add( he );  // put this on the undo list so we can undo this collapse again
 
     	// TODO: Objective 7: undo the edge collapse!
+    	vt.Q.add(he.head.Q);
+    	vt.Q.add(he.twin.head.Q);
+		HalfEdge twin = he.twin;
+    	HalfEdge A = he.next;
+    	HalfEdge B  = he.next.next;
+    	HalfEdge C = twin.next;
+    	HalfEdge D = twin.next.next;
+    	HalfEdge loop = C.twin;
+    	do {
+    		loop.head = vt;
+//    		Edge edge = loop.e;
+//    		if(edges.contains(edge)) {
+//    			edges.remove(edge);
+//    		}    		
+    		loop = loop.next.twin;
+    	}while(loop!=he.twin);	
+    	loop = A.twin;
+    	do {
+    		loop.head = vt;
+//    		Edge edge = loop.e;
+//    		if(edges.contains(edge)) {
+//    			edges.remove(edge);
+//    		}
+    		loop = loop.next.twin;
+    	}while(loop!=he);
     	
+    	B.head = vt;
+    	D.head = vt;
+    	A.twin.twin = B.twin;
+    	B.twin.twin = A.twin;
+    	C.twin.twin = D.twin;
+    	D.twin.twin = C.twin;
+    	Face f1 = A.leftFace;
+    	Face f2 = C.leftFace;
+    	faces.remove(f1);
+    	faces.remove(f2);
+//    	loop = A.twin;
+//    	do {
+//    		Edge edge = new Edge();
+//    		edge.he = loop;
+//    		loop.e = edge;
+//    		loop.twin.e = edge;
+//    		edge.recompute();
+//    		if(!causeTopologicalProblem(loop)) {
+//    			edges.add(edge);
+//    		}
+//    		loop = loop.next.twin;
+//    	}while(loop!=A.twin);
+    	//System.out.println("Removed " + count + " edges, add " + addCount + " edges" )
     }
       
     /**
@@ -359,17 +439,17 @@ public class HEDS {
             gl.glEnd();
         }
         
-        for ( Face face : faces ) {
-            HalfEdge he = face.he;
-            HalfEdge e = he;
-            do {
-            	gl.glPointSize(5);
-                gl.glBegin(GL2.GL_POINTS);
-                //System.out.println(e.e.v.x + ", " + e.e.v.y + ", " + e.e.v.z);
-                gl.glVertex3d(e.e.v.x, e.e.v.y, e.e.v.z);
-                gl.glEnd();
-            } while ( e != he );
-        }
+//        for ( Face face : faces ) {
+//            HalfEdge he = face.he;
+//            HalfEdge e = he;
+//            do {
+//            	gl.glPointSize(5);
+//                gl.glBegin(GL2.GL_POINTS);
+//                //System.out.println(e.e.v.x + ", " + e.e.v.y + ", " + e.e.v.z);
+//                gl.glVertex3d(e.e.v.x, e.e.v.y, e.e.v.z);
+//                gl.glEnd();
+//            } while ( e != he );
+//        }
     }
 
 	public boolean noMoreCollapse() {

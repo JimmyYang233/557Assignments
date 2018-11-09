@@ -92,7 +92,7 @@ public class MeshSimplificationApp implements SceneGraphNode, Interactor {
         	// don't go all the way to zero...  Just 1%
         	double s = 0.99 * LOD.getValue() + 0.01;
         	s = s*s; // or could do Math.pow( s, factor ) to adjust how the scaling goes with LOD, but quadratic seems good 
-        	gl.glScaled( s, s, s );
+        	//gl.glScaled( s, s, s );
         }
         
         if ( !wireFrame.getValue()) {
@@ -251,6 +251,7 @@ public class MeshSimplificationApp implements SceneGraphNode, Interactor {
             		}
                 } else if ( e.getKeyCode() == KeyEvent.VK_Z ) {
                 	heds.undoCollapse();
+                	currentHE = heds.edges.peek().he;
                 } else if ( e.getKeyCode() ==  KeyEvent.VK_Y ) {
                 	heds.redoCollapse();
                 }
