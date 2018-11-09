@@ -155,12 +155,16 @@ public class HEDS {
     	}
     	else if(causeTopologicalProblem(he)) {
     		System.out.println("Topology Problem!!");
-    		return;
     	}
     	else {
     		doCollapse(he, vt);
     	}    	
     	edges.remove(he.e);
+    	for(Edge edge : edges) {
+			if(causeTopologicalProblem(edge.he)) {
+				edges.remove(edge);
+			}
+		}
     	System.out.println("Total of " + edges.size() + " edges. " );
     }
     
@@ -181,8 +185,7 @@ public class HEDS {
     			edges.remove(edge);
     		}    		
     		loop = loop.next.twin;
-    	}while(loop!=B);
-    	
+    	}while(loop!=he.twin);	
     	loop = A.twin;
     	do {
     		loop.head = vt;
@@ -191,7 +194,7 @@ public class HEDS {
     			edges.remove(edge);
     		}
     		loop = loop.next.twin;
-    	}while(loop!=D);
+    	}while(loop!=he);
     	
     	B.head = vt;
     	D.head = vt;
@@ -215,6 +218,7 @@ public class HEDS {
     		}
     		loop = loop.next.twin;
     	}while(loop!=A.twin);
+    	//System.out.println("Removed " + count + " edges, add " + addCount + " edges" );
     }
     
     /**

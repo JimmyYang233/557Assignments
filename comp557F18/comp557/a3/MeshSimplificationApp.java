@@ -229,9 +229,10 @@ public class MeshSimplificationApp implements SceneGraphNode, Interactor {
                 		do {
                         	// TODO: Objective 2: handle C keypress to collapse until it is impossible to make further simplificaitons
             				if ( heds.noMoreCollapse() ) break;
-            				Edge edge = heds.edges.peek();
-            				heds.collapse(edge.he, edge.getVertex());
+            				currentHE = heds.edges.peek().he;
+            				heds.collapse(currentHE, currentHE.e.getVertex());
                 		} while ( true );
+                		currentHE = currentHE.next.twin;
                 	} else {
                     	// TODO: Objective 2: handle C keypress to collapse an edge
                 		Vertex point = currentHE.e.getVertex();
