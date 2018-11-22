@@ -238,6 +238,7 @@ public class MeshSimplificationApp implements SceneGraphNode, Interactor {
             				if ( heds.noMoreCollapse() ) break;
             				currentHE = heds.edges.peek().he;
             				heds.collapse(currentHE, currentHE.e.getVertex());
+            				//heds.collapse(currentHE, HEDS.getMiddlePoint(currentHE.head, currentHE.twin.head));
                 		} while ( true );
                 		currentHE = currentHE.next.twin;
                 	} else {
