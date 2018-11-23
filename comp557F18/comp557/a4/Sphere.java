@@ -39,7 +39,7 @@ public class Sphere extends Intersectable {
     public void intersect( Ray ray, IntersectResult result ) {
     	Point3d c = center;
     	//System.out.println(center);
-    	double r = 1;
+    	double r = 6;
     	Point3d o = ray.eyePoint;
     	//System.out.println(ray.viewDirection);
     	Vector3d l = ray.viewDirection;

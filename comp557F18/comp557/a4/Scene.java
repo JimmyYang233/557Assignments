@@ -100,10 +100,10 @@ public class Scene {
      */
 	public static void generateRay(final int i, final int j, final double[] offset, final Camera cam, Ray ray) {
 		
-		double l = -4;
-		double r = 4;
-		double b = -4;
-		double t = 4;
+		double l = -8;
+		double r = 8;
+		double b = -8;
+		double t = 8;
 		double nx = cam.imageSize.width;
 		double ny = cam.imageSize.height;
 		double u = l+((r-l)*(i+0.5)/nx);
