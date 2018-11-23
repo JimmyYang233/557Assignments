@@ -1,6 +1,7 @@
 package comp557.a4;
 
 import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
 
 /**
  * A simple sphere class.
@@ -36,9 +37,20 @@ public class Sphere extends Intersectable {
     
     @Override
     public void intersect( Ray ray, IntersectResult result ) {
-    
-        // TODO: Objective 2: intersection of ray with sphere
-	
+    	Point3d c = center;
+    	//System.out.println(center);
+    	double r = 1;
+    	Point3d o = ray.eyePoint;
+    	//System.out.println(ray.viewDirection);
+    	Vector3d l = ray.viewDirection;
+    	double a = l.x*l.x+l.y*l.y+l.z*l.z;
+    	double b = (l.x*(o.x-c.x)+l.y*(o.y-c.y)+l.z*(o.z-c.z));
+    	double cc = (o.x-c.x)*(o.x-c.x)+(o.y-c.y)*(o.y-c.y)+(o.z-c.z)*(o.z-c.z)-r*r;
+    	double triangle = b*b-a*cc;
+    	System.out.println(a+ ", " + b + ", " + cc);
+    	if(triangle<0) {
+    		result.p = null;
+    	}
     }
     
 }

@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.vecmath.Color3f;
+import javax.vecmath.Color4f;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
 
 /**
  * Simple scene loader based on XML file format.
@@ -45,8 +48,14 @@ public class Scene {
             for ( int j = 0; j < w && !render.isDone(); j++ ) {
             	
                 // TODO: Objective 1: generate a ray (use the generateRay method)
+            	Ray ray = new Ray();
+            	double[] offset = new double[2];
+            	Scene.generateRay(i, j, offset, cam, ray);
             	
                 // TODO: Objective 2: test for intersection with scene surfaces
+            	IntersectResult ir = new IntersectResult();
+            	Intersectable sphere = surfaceList.get(0);
+            	sphere.intersect(ray, ir);
             	
                 // TODO: Objective 3: compute the shaded result for the intersection point (perhaps requiring shadow rays)
                 
@@ -55,9 +64,16 @@ public class Scene {
             	// Here is an example of how to calculate the pixel value.
             	Color3f c = new Color3f(render.bgcolor);
             	int r = (int)(255*c.x);
-                int g = (int)(255*c.y);
+            	int g = (int)(255*c.y);
                 int b = (int)(255*c.z);
                 int a = 255;
+                if(ir.p!=null) {
+                	Color4f cc = sphere.material.diffuse;
+                	r = (int)(cc.x*255);
+                	g = (int)(cc.y*255);
+                	b = (int)(cc.z*255);
+                }
+            	
                 int argb = (a<<24 | r<<16 | g<<8 | b);    
                 
                 // update the render image
@@ -84,8 +100,28 @@ public class Scene {
      */
 	public static void generateRay(final int i, final int j, final double[] offset, final Camera cam, Ray ray) {
 		
-		// TODO: Objective 1: generate rays given the provided parmeters
-		
+		double l = -4;
+		double r = 4;
+		double b = -4;
+		double t = 4;
+		double nx = cam.imageSize.width;
+		double ny = cam.imageSize.height;
+		double u = l+((r-l)*(i+0.5)/nx);
+		double v = b+((t-b)*(j+0.5)/ny);
+		Point3d e = cam.from;
+		double d = e.z;
+		Vector3d cw = new Vector3d(cam.from.x-cam.to.x, cam.from.y-cam.to.y, cam.from.z-cam.to.z);
+		cw.normalize();
+		Vector3d cu = new Vector3d();
+		cu.cross(cam.up, cw);
+		cu.normalize();
+		Vector3d cv = new Vector3d();
+		cv.cross(cw, cu);
+		Vector3d cd = new Vector3d(cu.x*u+cv.x*v-cw.x*d, cu.y*u+cv.y*v-cw.y*d, cu.z*u+cv.z*v-cw.z*d);
+		//cd.normalize();
+		ray.eyePoint = e;
+		ray.viewDirection = cd;
+		//System.out.println(cd);
 	}
 
 	/**
