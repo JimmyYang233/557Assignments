@@ -39,7 +39,7 @@ public class Sphere extends Intersectable {
     public void intersect( Ray ray, IntersectResult result ) {
     	Point3d c = center;
     	//System.out.println(center);
-    	double r = 6;
+    	double r = radius;
     	Point3d o = ray.eyePoint;
     	//System.out.println(ray.viewDirection);
     	Vector3d l = ray.viewDirection;
@@ -47,7 +47,7 @@ public class Sphere extends Intersectable {
     	double b = (l.x*(o.x-c.x)+l.y*(o.y-c.y)+l.z*(o.z-c.z));
     	double cc = (o.x-c.x)*(o.x-c.x)+(o.y-c.y)*(o.y-c.y)+(o.z-c.z)*(o.z-c.z)-r*r;
     	double triangle = b*b-a*cc;
-    	System.out.println(a+ ", " + b + ", " + cc);
+    	//System.out.println(a+ ", " + b + ", " + cc);
     	if(triangle<0) {
     		result.p = null;
     	}

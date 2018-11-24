@@ -100,16 +100,19 @@ public class Scene {
      */
 	public static void generateRay(final int i, final int j, final double[] offset, final Camera cam, Ray ray) {
 		
-		double l = -8;
-		double r = 8;
-		double b = -8;
-		double t = 8;
+		Point3d e = cam.from;
+		double d = e.z;
+		double angle = cam.fovy*Math.PI/180;
+		double t = d*Math.tan(angle/2);
+		double b = -t;
+		double aspectRatio = cam.imageSize.width/cam.imageSize.height;
+		double l = b*aspectRatio;
+		double r = t*aspectRatio;
 		double nx = cam.imageSize.width;
 		double ny = cam.imageSize.height;
 		double u = l+((r-l)*(i+0.5)/nx);
 		double v = b+((t-b)*(j+0.5)/ny);
-		Point3d e = cam.from;
-		double d = e.z;
+			
 		Vector3d cw = new Vector3d(cam.from.x-cam.to.x, cam.from.y-cam.to.y, cam.from.z-cam.to.z);
 		cw.normalize();
 		Vector3d cu = new Vector3d();
