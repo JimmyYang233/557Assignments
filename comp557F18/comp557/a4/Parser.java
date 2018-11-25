@@ -43,6 +43,7 @@ public class Parser {
             } else if ( nodeName.equalsIgnoreCase( "render" ) ) {                
                 scene.render = Parser.createRender(n);
             } else if ( nodeName.equalsIgnoreCase( "node" ) ) {
+            	System.out.println("Was here");
             	scene.surfaceList.add( Parser.createSceneNode(n) );
             } else if ( nodeName.equalsIgnoreCase( "plane" ) ) {
         		Plane plane = Parser.createPlane(n);

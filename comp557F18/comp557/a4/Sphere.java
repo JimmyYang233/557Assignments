@@ -1,5 +1,6 @@
 package comp557.a4;
 
+import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
@@ -55,7 +56,9 @@ public class Sphere extends Intersectable {
     	else if (triangle == 0) {
     		//1 intersection, just find it.
     		result.material = new Material();
-    		System.out.println(this.material.specular);
+    		result.material.diffuse = new Color4f(this.material.diffuse);
+    		result.material.specular = new Color4f(this.material.specular);
+    		result.material.shinyness = this.material.shinyness;
     		//compute t
     		result.t = -b/(2*a);
     		//compute p
@@ -71,7 +74,10 @@ public class Sphere extends Intersectable {
     	
     	else if(triangle>0) {
     		// 2 intersections, find the closest one.
-    		result.material = this.material;
+    		result.material = new Material();
+    		result.material.diffuse = new Color4f(this.material.diffuse);
+    		result.material.specular = new Color4f(this.material.specular);
+    		result.material.shinyness = this.material.shinyness;
     		//compute t
     		result.t = -(b+Math.sqrt(triangle))/(2*a);
     		double t2 = -(b-Math.sqrt(triangle))/(2*a);

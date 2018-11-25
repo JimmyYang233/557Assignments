@@ -57,8 +57,17 @@ public class SceneNode extends Intersectable {
 
     	// this is not going to work, but might help you get
     	// started with some scenes...
-    	children.get(0).intersect( ray, result );
     	
+    	for(Intersectable intersectable : children) {
+    		IntersectResult ir = new IntersectResult(); 
+    		intersectable.intersect(ray, ir);
+    		if(ir.t<=result.t) {
+    			result.t = ir.t;
+    			result.p = ir.p;
+    			result.material = ir.material;
+    			result.n = ir.n;
+    		}
+    	}
     }
     
 }

@@ -53,35 +53,48 @@ public class Scene {
             	Scene.generateRay(i, j, offset, cam, ray);
             	
                 // TODO: Objective 2: test for intersection with scene surfaces
-            	IntersectResult ir = new IntersectResult();
-            	Intersectable sphere = surfaceList.get(0);
-            	sphere.intersect(ray, ir);
-            	
-            	
-                // TODO: Objective 3: compute the shaded result for the intersection point (perhaps requiring shadow rays)
-            	int tmp = 0;
-            	for(Light light : lights.values()) {
-            		tmp ++;
-            		if(ir.material!=null) {
-            			lambertianShading(light, ir);
-            		}
-            	}
-                
-            	// TODO: Objective 8: do antialiasing by sampling more than one ray per pixel
-            	
-            	// Here is an example of how to calculate the pixel value.
             	Color3f c = new Color3f(render.bgcolor);
             	int r = (int)(255*c.x);
             	int g = (int)(255*c.y);
                 int b = (int)(255*c.z);
                 int a = 255;
-                if(ir.material!=null) {
-                	//System.out.println(ir.material.diffuse);
-                	Color4f cc = ir.material.diffuse;
-                	r = (int)(cc.x*255);
-                	g = (int)(cc.y*255);
-                	b = (int)(cc.z*255);
-                }
+            	IntersectResult fir = new IntersectResult();
+                //System.out.println(surfaceList.size());
+            	for(Intersectable intersectable : surfaceList) {
+            		IntersectResult ir = new IntersectResult();
+            		intersectable.intersect(ray, ir);
+            		if(ir.t<=fir.t) {
+            			fir = ir;
+            		}
+            	}
+            	
+            	
+            	if(fir.material!=null) {
+            		Color4f la = ambientShading(fir);
+            		double lx = la.x;
+                	double ly = la.y;
+                	double lz = la.z;
+                    // TODO: Objective 3: compute the shaded result for the intersection point (perhaps requiring shadow rays)
+                	for(Light light : lights.values()) {
+            			Color4f ld = lambertianShading(light, fir);
+            			lx += ld.x;
+            			ly += ld.y;
+            			lz += ld.z;
+            			Color4f ls = specularShading(light, ray, fir);
+            			lx += ls.x;
+            			ly += ls.y;
+                	}
+	              	r = (int)(Math.min(1, lx)*255);
+	              	g = (int)(Math.min(1, ly)*255);
+	              	b = (int)(Math.min(1, lz)*255);
+	             }
+            	
+                
+            	// TODO: Objective 8: do antialiasing by sampling more than one ray per pixel
+            	
+            	
+            	
+	           	
             	
                 int argb = (a<<24 | r<<16 | g<<8 | b);    
                 
@@ -114,13 +127,15 @@ public class Scene {
 		double angle = cam.fovy*Math.PI/180;
 		double t = d*Math.tan(angle/2);
 		double b = -t;
-		double aspectRatio = cam.imageSize.width/cam.imageSize.height;
+		double aspectRatio = (double)cam.imageSize.width/(double)cam.imageSize.height;
+		//System.out.println(aspectRatio);
 		double l = b*aspectRatio;
 		double r = t*aspectRatio;
+		//System.out.println(l +", " + r + ", " +  ", " + b + ", " + t);
 		double nx = cam.imageSize.width;
 		double ny = cam.imageSize.height;
-		double u = l+((r-l)*(i+0.5)/nx);
-		double v = b+((t-b)*(j+0.5)/ny);
+		double u = l+((r-l)*(j+0.5)/nx);
+		double v = t+((b-t)*(i+0.5)/ny);
 			
 		Vector3d cw = new Vector3d(cam.from.x-cam.to.x, cam.from.y-cam.to.y, cam.from.z-cam.to.z);
 		cw.normalize();
@@ -154,19 +169,73 @@ public class Scene {
 	}
 	
 	
-	public void lambertianShading(Light light, IntersectResult ir) {
+	public Color4f lambertianShading(Light light, IntersectResult ir) {
 		Point3d p = ir.p;
     	Vector3d n = ir.n;
-		Ray lightRay = new Ray();
 		Vector3d l = new Vector3d();
 		l.x = light.from.x-p.x;
 		l.y = light.from.y-p.y;
 		l.z = light.from.z-p.z;
-		lightRay.eyePoint = light.from;
-		lightRay.viewDirection = l;
-		System.out.println(ir.material.diffuse);
+		l.normalize();
+		
+		//I
+		Color4f I = new Color4f();
+		I.x = (float) (light.color.x*light.power);
+		I.y = (float) (light.color.y*light.power);
+		I.z = (float) (light.color.z*light.power);
+		
+		//kd
+		Color4f kd = ir.material.diffuse;
+		
+		//computation
 		float nl = (float) (n.x*l.x+n.y*l.y+n.z*l.z);
-		ir.material.diffuse.scale(Math.max(0, nl));
-		System.out.println(ir.material.diffuse);
+		Color4f result = new Color4f();
+		result.x = (float) (kd.x*I.x*Math.max(0, nl));
+		result.y = (float) (kd.y*I.y*Math.max(0, nl));
+		result.z = (float) (kd.z*I.z*Math.max(0, nl));
+		return result;
+		//System.out.println(ir.material.diffuse);
+	}
+	
+	public Color4f specularShading(Light light, Ray ray, IntersectResult ir) {
+		Point3d p = ir.p;
+		Vector3d n = ir.n;
+		n.normalize();
+		Vector3d l = new Vector3d();
+		l.x = light.from.x-p.x;
+		l.y = light.from.y-p.y;
+		l.z = light.from.z-p.z;
+		l.normalize();
+		Vector3d v = new Vector3d();
+		v.x = -ray.viewDirection.x;
+		v.y = -ray.viewDirection.y;
+		v.z = -ray.viewDirection.z;
+		v.normalize();
+		Vector3d h = new Vector3d();
+		h.x = v.x+l.x;
+		h.y = v.y+l.y;
+		h.z = v.z+l.z;
+		h.normalize();
+		double shine = ir.material.shinyness;
+		Color4f ks = ir.material.specular;
+		Color4f I = new Color4f();
+		I.x = (float) (light.color.x*light.power);
+		I.y = (float) (light.color.y*light.power);
+		I.z = (float) (light.color.z*light.power);
+		//System.out.println(ir.material.specular);
+		double value = Math.pow(Math.max(0, n.x*h.x+n.y*h.y+n.z*h.z), shine);
+		Color4f result = new Color4f();
+		result.x = (float) (ks.x*I.x*value);
+		result.y = (float) (ks.y*I.y*value);
+		result.z = (float) (ks.z*I.z*value);
+		return result;
+	}
+	
+	public Color4f ambientShading(IntersectResult ir) {
+		Color4f result = new Color4f();
+		result.x = (float) (ir.material.diffuse.x*ambient.x*0.1);
+		result.y = (float) (ir.material.diffuse.y*ambient.y*0.1);
+		result.z = (float) (ir.material.diffuse.z*ambient.z*0.1);
+		return result;
 	}
 }
