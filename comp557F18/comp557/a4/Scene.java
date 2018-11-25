@@ -57,7 +57,14 @@ public class Scene {
             	Intersectable sphere = surfaceList.get(0);
             	sphere.intersect(ray, ir);
             	
+            	
                 // TODO: Objective 3: compute the shaded result for the intersection point (perhaps requiring shadow rays)
+            	
+            	for(Light light : lights.values()) {
+            		if(ir.material!=null) {
+            			lambertianShading(light, ir);
+            		}
+            	}
                 
             	// TODO: Objective 8: do antialiasing by sampling more than one ray per pixel
             	
@@ -67,8 +74,9 @@ public class Scene {
             	int g = (int)(255*c.y);
                 int b = (int)(255*c.z);
                 int a = 255;
-                if(ir.p!=null) {
-                	Color4f cc = sphere.material.diffuse;
+                if(ir.material!=null) {
+                	//System.out.println(ir.material.diffuse);
+                	Color4f cc = ir.material.diffuse;
                 	r = (int)(cc.x*255);
                 	g = (int)(cc.y*255);
                 	b = (int)(cc.z*255);
@@ -124,7 +132,6 @@ public class Scene {
 		//cd.normalize();
 		ray.eyePoint = e;
 		ray.viewDirection = cd;
-		//System.out.println(cd);
 	}
 
 	/**
@@ -143,5 +150,27 @@ public class Scene {
 		// TODO: Objective 5: check for shdows and use it in your lighting computation
 		
 		return false;
-	}    
+	}
+	
+	
+	public void lambertianShading(Light light, IntersectResult ir) {
+		Point3d p = ir.p;
+    	Vector3d n = ir.n;
+		Ray lightRay = new Ray();
+		Vector3d l = new Vector3d();
+		l.x = light.from.x-p.x;
+		l.y = light.from.y-p.y;
+		l.z = light.from.z-p.z;
+		lightRay.eyePoint = light.from;
+		lightRay.viewDirection = l;
+		float nl = (float) (n.x*l.x+n.y*l.y+n.z*l.z);
+		Color4f cc = (Color4f) ir.material.diffuse.clone();
+		float x = cc.x;
+		float y = cc.y;
+		float z = cc.z;
+		float newX = x*Math.max(0, nl);
+		System.out.println(newX);
+		ir.material.diffuse.x = newX;
+		System.out.println(ir.material.diffuse);
+	}
 }

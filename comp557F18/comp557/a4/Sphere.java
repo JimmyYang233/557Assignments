@@ -44,13 +44,50 @@ public class Sphere extends Intersectable {
     	//System.out.println(ray.viewDirection);
     	Vector3d l = ray.viewDirection;
     	double a = l.x*l.x+l.y*l.y+l.z*l.z;
-    	double b = (l.x*(o.x-c.x)+l.y*(o.y-c.y)+l.z*(o.z-c.z));
+    	double b = 2*(l.x*(o.x-c.x)+l.y*(o.y-c.y)+l.z*(o.z-c.z));
     	double cc = (o.x-c.x)*(o.x-c.x)+(o.y-c.y)*(o.y-c.y)+(o.z-c.z)*(o.z-c.z)-r*r;
-    	double triangle = b*b-a*cc;
+    	double triangle = b*b-4*a*cc;
     	//System.out.println(a+ ", " + b + ", " + cc);
     	if(triangle<0) {
-    		result.p = null;
+    		//no intersection, material same as the bgcolor;
+    		result.material = null;	
     	}
+    	else if (triangle == 0) {
+    		//1 intersection, just find it.
+    		result.material = this.material;
+    		//compute t
+    		result.t = -b/(2*a);
+    		//compute p
+    		result.p.x = o.x + result.t*l.x;
+    		result.p.y = o.y + result.t*l.y;
+    		result.p.z = o.z + result.t*l.z;
+    		//compute n
+    		result.n.x = result.p.x-center.x;
+    		result.n.y = result.p.y-center.y;
+    		result.n.z = result.p.z-center.z;
+    		result.n.normalize();
+    	}
+    	
+    	else if(triangle>0) {
+    		// 2 intersections, find the closest one.
+    		result.material = this.material;
+    		//compute t
+    		result.t = -(b+Math.sqrt(triangle))/(2*a);
+    		double t2 = -(b-Math.sqrt(triangle))/(2*a);
+    		if(t2<result.t) {
+    			result.t = t2;
+    		}
+    		//compute p
+    		result.p.x = o.x + result.t*l.x;
+    		result.p.y = o.y + result.t*l.y;
+    		result.p.z = o.z + result.t*l.z;
+    		//compute n
+    		result.n.x = result.p.x-center.x;
+    		result.n.y = result.p.y-center.y;
+    		result.n.z = result.p.z-center.z;
+    		result.n.normalize();
+    	}
+    	
     }
     
 }
