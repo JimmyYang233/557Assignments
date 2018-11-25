@@ -59,8 +59,9 @@ public class Scene {
             	
             	
                 // TODO: Objective 3: compute the shaded result for the intersection point (perhaps requiring shadow rays)
-            	
+            	int tmp = 0;
             	for(Light light : lights.values()) {
+            		tmp ++;
             		if(ir.material!=null) {
             			lambertianShading(light, ir);
             		}
@@ -163,7 +164,9 @@ public class Scene {
 		l.z = light.from.z-p.z;
 		lightRay.eyePoint = light.from;
 		lightRay.viewDirection = l;
+		System.out.println(ir.material.diffuse);
 		float nl = (float) (n.x*l.x+n.y*l.y+n.z*l.z);
 		ir.material.diffuse.scale(Math.max(0, nl));
+		System.out.println(ir.material.diffuse);
 	}
 }

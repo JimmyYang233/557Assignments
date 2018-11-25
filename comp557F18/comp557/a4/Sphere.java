@@ -54,7 +54,8 @@ public class Sphere extends Intersectable {
     	}
     	else if (triangle == 0) {
     		//1 intersection, just find it.
-    		result.material = this.material;
+    		result.material = new Material();
+    		System.out.println(this.material.specular);
     		//compute t
     		result.t = -b/(2*a);
     		//compute p
