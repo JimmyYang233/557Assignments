@@ -164,13 +164,6 @@ public class Scene {
 		lightRay.eyePoint = light.from;
 		lightRay.viewDirection = l;
 		float nl = (float) (n.x*l.x+n.y*l.y+n.z*l.z);
-		Color4f cc = (Color4f) ir.material.diffuse.clone();
-		float x = cc.x;
-		float y = cc.y;
-		float z = cc.z;
-		float newX = x*Math.max(0, nl);
-		System.out.println(newX);
-		ir.material.diffuse.x = newX;
-		System.out.println(ir.material.diffuse);
+		ir.material.diffuse.scale(Math.max(0, nl));
 	}
 }
