@@ -79,7 +79,6 @@ public class Scene {
                 		IntersectResult shadResult = new IntersectResult();
                 		Ray shadowRay = new Ray();
                 		if(!inShadow(fir, light, surfaceList, shadResult, shadowRay)) {
-                		//if(true) {
                 			Color4f ld = lambertianShading(light, fir);
                 			lx += ld.x;
                 			ly += ld.y;
@@ -87,6 +86,7 @@ public class Scene {
                 			Color4f ls = specularShading(light, ray, fir);
                 			lx += ls.x;
                 			ly += ls.y;
+                			lz += ls.z;
                 		}
             			
                 	}
@@ -151,7 +151,7 @@ public class Scene {
 		Vector3d cv = new Vector3d();
 		cv.cross(cw, cu);
 		Vector3d cd = new Vector3d(cu.x*u+cv.x*v-cw.x*d, cu.y*u+cv.y*v-cw.y*d, cu.z*u+cv.z*v-cw.z*d);
-		//cd.normalize();
+		cd.normalize();
 		ray.eyePoint = e;
 		ray.viewDirection = cd;
 	}

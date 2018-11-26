@@ -122,7 +122,7 @@ public class Box extends Intersectable {
     		//System.out.println(material.diffuse);
     		if(result.n.x==0&&result.n.y==0&&result.n.z==0&&result.material!=null) {
     			//Stop here;
-    			System.out.println("Was here");
+    			//System.out.println("Was here");
     		}
 		}
 		

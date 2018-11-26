@@ -5,7 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.vecmath.Color4f;
 import javax.vecmath.Matrix4d;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
 
 import comp557.a4.IntersectResult;
 import comp557.a4.Intersectable;
@@ -55,22 +58,72 @@ public class SceneNode extends Intersectable {
 
     	// TODO: Objective 7: implement hierarchy with instances
 
-    	// this is not going to work, but might help you get
-    	// started with some scenes...
-    	
+    	//System.out.println(M);
+    	//Minv.invert(M);
+    	double px = ray.eyePoint.x;
+    	double py = ray.eyePoint.y;
+    	double pz = ray.eyePoint.z;
+    	double dx = ray.viewDirection.x;
+    	double dy = ray.viewDirection.y;
+    	double dz = ray.viewDirection.z;
+    	double a = Minv.m00;
+    	double b = Minv.m01;
+    	double c = Minv.m02;
+    	double d = Minv.m03;
+    	double e = Minv.m10;
+    	double f = Minv.m11;
+    	double g = Minv.m12;
+    	double h = Minv.m13;
+    	double i = Minv.m20;
+    	double j = Minv.m21;
+    	double k = Minv.m22;
+    	double l = Minv.m23;
+    	Point3d newP = new Point3d(a*px+b*py+c*pz+d, e*px+f*py+g*pz+h, i*px+j*py+k*pz+l);
+    	Vector3d newd = new Vector3d(a*dx+b*dy+c*dz, e*dx+f*dy+g*dz, i*dx+j*dy+k*dz);
+    	ray.eyePoint = newP;
+    	ray.viewDirection = newd;
     	for(Intersectable intersectable : children) {
     		IntersectResult ir = new IntersectResult(); 
     		intersectable.intersect(ray, ir);
+    		Point3d p = ir.p;
+			 px = p.x;
+			 py = p.y;
+			 pz = p.z;
+			 a = M.m00;
+			 b = M.m01;
+	    	 c = M.m02;
+	    	 d = M.m03;
+	    	 e = M.m10;
+	    	 f = M.m11;
+	    	 g = M.m12;
+	    	 h = M.m13;
+	    	 i = M.m20;
+	    	 j = M.m21;
+	    	 k = M.m22;
+	    	 l = M.m23;
+	    	newP = new Point3d(a*px+b*py+c*pz+d, e*px+f*py+g*pz+h, i*px+j*py+k*pz+l);
+	    	ir.p = newP; 
+	    	Vector3d n = ir.n;
+	    	double nx = n.x;
+	    	double ny = n.y;
+	    	double nz = n.z;
+	    	Vector3d newN = new Vector3d(a*nx+b*ny+c*nz, e*nx+f*ny+g*nz, i*nx+j*ny+k*nz);
+	    	ir.n = newN;
     		if(ir.material!=null) {
     			if(ir.t<result.t) {
         			result.t = ir.t;
-        			result.p = ir.p;
+        	    	result.p = ir.p;
         			result.material = ir.material;
-        			result.n = ir.n;
+        	    	result.n = ir.n;
         		}
     		}
-    		
     	}
+//    	if(result.material==null) {
+//    		result.material = new Material();
+//    		result.material.diffuse = new Color4f(this.material.diffuse);
+//    		result.material.specular = new Color4f(this.material.specular);
+//    		result.material.shinyness = this.material.shinyness;
+//    	}
     }
     
 }
