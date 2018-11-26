@@ -15,7 +15,7 @@
   </render> 
   
   <node name="root" >
-    <mesh name="myTorus" filename="a4data/torus.obj" >
+    <mesh name="myTorus" filename="comp557F18/a4data/torus.obj" >
       <material ref="red" />
     </mesh>
   </node>
