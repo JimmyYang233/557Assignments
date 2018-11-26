@@ -100,26 +100,30 @@ public class Box extends Intersectable {
     		}
     		//System.out.println(tmin+ ", " + tmax);
     		//System.out.println(p);
-    		if(p.x==xMin) {
+    		if(p.x<xMin+0.001&&p.x>xMin-0.001) {
     			result.n = new Vector3d(-1,0,0);
     		}
-    		else if(p.x==xMax) {
+    		else if(p.x<xMax+0.00001&&p.x>xMax-0.00001) {
     			result.n = new Vector3d(1,0,0);
     		}
-    		else if(p.y == yMin) {
+    		else if(p.y<yMin+0.00001&&p.y>yMin-0.00001) {
     			result.n = new Vector3d(0,-1,0);
     		}
-    		else if(p.y == yMax) {
+    		else if(p.y < yMax+0.00001&&p.y>yMax-0.00001) {
     			result.n = new Vector3d(0,1,0);
     		}
-    		else if(p.z == zMin) {
+    		else if(p.z < zMin+0.00001&&p.z>yMin-0.00001) {
     			result.n = new Vector3d(0,0,-1);
     		}
-    		else if(p.z == zMax) {
+    		else if(p.z < zMax+0.00001&&p.z>zMax-0.00001) {
     			result.n = new Vector3d(0,0,1);
     		}
-    		System.out.println(result.n);
+    		//System.out.println(result.n);
     		//System.out.println(material.diffuse);
+    		if(result.n.x==0&&result.n.y==0&&result.n.z==0&&result.material!=null) {
+    			//Stop here;
+    			System.out.println("Was here");
+    		}
 		}
 		
 		
