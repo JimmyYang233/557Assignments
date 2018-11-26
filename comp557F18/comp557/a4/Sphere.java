@@ -61,6 +61,9 @@ public class Sphere extends Intersectable {
     		result.material.shinyness = this.material.shinyness;
     		//compute t
     		result.t = -b/(2*a);
+    		if(result.t<0) {
+    			result.material = null;
+    		}
     		//compute p
     		result.p.x = o.x + result.t*l.x;
     		result.p.y = o.y + result.t*l.y;
@@ -81,8 +84,11 @@ public class Sphere extends Intersectable {
     		//compute t
     		result.t = -(b+Math.sqrt(triangle))/(2*a);
     		double t2 = -(b-Math.sqrt(triangle))/(2*a);
-    		if(t2<result.t) {
+    		if(t2<result.t||result.t<0) {
     			result.t = t2;
+    		}
+    		if(result.t<0) {
+    			result.material = null;
     		}
     		//compute p
     		result.p.x = o.x + result.t*l.x;

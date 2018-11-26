@@ -76,13 +76,19 @@ public class Scene {
                 	double lz = la.z;
                     // TODO: Objective 3: compute the shaded result for the intersection point (perhaps requiring shadow rays)
                 	for(Light light : lights.values()) {
-            			Color4f ld = lambertianShading(light, fir);
-            			lx += ld.x;
-            			ly += ld.y;
-            			lz += ld.z;
-            			Color4f ls = specularShading(light, ray, fir);
-            			lx += ls.x;
-            			ly += ls.y;
+                		IntersectResult shadResult = new IntersectResult();
+                		Ray shadowRay = new Ray();
+                		if(!inShadow(fir, light, surfaceList, shadResult, shadowRay)) {
+                		//if(true) {
+                			Color4f ld = lambertianShading(light, fir);
+                			lx += ld.x;
+                			ly += ld.y;
+                			lz += ld.z;
+                			Color4f ls = specularShading(light, ray, fir);
+                			lx += ls.x;
+                			ly += ls.y;
+                		}
+            			
                 	}
 	              	r = (int)(Math.min(1, lx)*255);
 	              	g = (int)(Math.min(1, ly)*255);
@@ -161,9 +167,21 @@ public class Scene {
 	 * 
 	 * @return True if a point is in shadow, false otherwise. 
 	 */
-	public static boolean inShadow(final IntersectResult result, final Light light, final SceneNode root, IntersectResult shadowResult, Ray shadowRay) {
+	public static boolean inShadow(final IntersectResult result, final Light light, final List<Intersectable> sl, IntersectResult shadowResult, Ray shadowRay) {
 		
 		// TODO: Objective 5: check for shdows and use it in your lighting computation
+		shadowRay = new Ray(result.p, new Vector3d(light.from.x-result.p.x, light.from.y-result.p.y, light.from.z-result.p.z));
+		Point3d p = shadowRay.eyePoint;
+		Vector3d d = shadowRay.viewDirection;
+		Point3d finalP = new Point3d(p.x+0.001*d.x, p.y+0.001*d.y, p.z+0.001*d.z);
+		shadowRay.eyePoint = finalP;
+		for(Intersectable intersectable : sl) {
+			intersectable.intersect(shadowRay, shadowResult);
+			if(shadowResult.material!=null) {
+				//System.out.println(shadowResult.p + ", " + result.p);
+				return true;
+			}
+		}
 		
 		return false;
 	}
@@ -172,6 +190,7 @@ public class Scene {
 	public Color4f lambertianShading(Light light, IntersectResult ir) {
 		Point3d p = ir.p;
     	Vector3d n = ir.n;
+    	//System.out.println(n);
 		Vector3d l = new Vector3d();
 		l.x = light.from.x-p.x;
 		l.y = light.from.y-p.y;
@@ -233,9 +252,9 @@ public class Scene {
 	
 	public Color4f ambientShading(IntersectResult ir) {
 		Color4f result = new Color4f();
-		result.x = (float) (ir.material.diffuse.x*ambient.x*0.1);
-		result.y = (float) (ir.material.diffuse.y*ambient.y*0.1);
-		result.z = (float) (ir.material.diffuse.z*ambient.z*0.1);
+		result.x = (float) (ir.material.diffuse.x*ambient.x*0.05);
+		result.y = (float) (ir.material.diffuse.y*ambient.y*0.05);
+		result.z = (float) (ir.material.diffuse.z*ambient.z*0.05);
 		return result;
 	}
 }

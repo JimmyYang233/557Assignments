@@ -39,7 +39,7 @@ public class Plane extends Intersectable {
     	if(ln != 0) {
     		result.t = ((p0.x-l0.x)*n.x+(p0.y-l0.y)*n.y+(p0.z*l0.z)*n.z)/ln;
     		//System.out.println(result.t);
-    		if(result.t>=0) {
+    		if(result.t>0) {
     			//compute p
         		result.p.x = l0.x + result.t*l.x;
         		result.p.y = l0.y + result.t*l.y;

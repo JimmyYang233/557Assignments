@@ -61,12 +61,15 @@ public class SceneNode extends Intersectable {
     	for(Intersectable intersectable : children) {
     		IntersectResult ir = new IntersectResult(); 
     		intersectable.intersect(ray, ir);
-    		if(ir.t<=result.t) {
-    			result.t = ir.t;
-    			result.p = ir.p;
-    			result.material = ir.material;
-    			result.n = ir.n;
+    		if(ir.material!=null) {
+    			if(ir.t<result.t) {
+        			result.t = ir.t;
+        			result.p = ir.p;
+        			result.material = ir.material;
+        			result.n = ir.n;
+        		}
     		}
+    		
     	}
     }
     
