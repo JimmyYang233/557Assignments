@@ -48,56 +48,64 @@ public class Scene {
         for ( int i = 0; i < h && !render.isDone(); i++ ) {
             for ( int j = 0; j < w && !render.isDone(); j++ ) {
             	
-                // TODO: Objective 1: generate a ray (use the generateRay method)
-            	Ray ray = new Ray();
-            	double[] offset = new double[2];
-            	Scene.generateRay(i, j, offset, cam, ray);
-            	
-                // TODO: Objective 2: test for intersection with scene surfaces
-            	Color3f c = new Color3f(render.bgcolor);
-            	int r = (int)(255*c.x);
-            	int g = (int)(255*c.y);
-                int b = (int)(255*c.z);
-                int a = 255;
-            	IntersectResult fir = new IntersectResult();
-                //System.out.println(surfaceList.size());
-            	for(Intersectable intersectable : surfaceList) {
-            		IntersectResult ir = new IntersectResult();
-            		intersectable.intersect(ray, ir);
-            		if(ir.t<=fir.t) {
-            			fir = ir;
+                // TODO: Objective 1: generate a ray (use the generateRay method)       	
+            	double[] offset = new double[] {-0.5, 0.5};
+            	int finalr = 0;
+            	int finalg = 0;
+            	int finalb = 0;
+            	int finala = 255;
+            	//System.out.println(render.samples);
+            	//render.samples = 1;
+            	for(int k = 0; k<render.samples;k++) {
+            		for(int m = 0;m<render.samples;m++) {
+	            		Ray ray = new Ray();
+		            	Scene.generateRay(i, j, k, m, render.samples, offset, cam, ray);
+		            	
+		                // TODO: Objective 2: test for intersection with scene surfaces
+		            	Color3f c = new Color3f(render.bgcolor);
+		            	int r = (int)(255*c.x);
+		            	int g = (int)(255*c.y);
+		                int b = (int)(255*c.z);
+		            	IntersectResult fir = new IntersectResult();
+		                //System.out.println(surfaceList.size());
+		            	for(Intersectable intersectable : surfaceList) {
+		            		IntersectResult ir = new IntersectResult();
+		            		intersectable.intersect(ray, ir);
+		            		if(ir.t<=fir.t) {
+		            			fir = ir;
+		            		}
+		            	}
+		            	
+		            	
+		            	if(fir.material!=null) {
+		            		// TODO: Objective 3: compute the shaded result for the intersection point (perhaps requiring shadow rays)
+		            		double lx = 0;
+		            		double ly = 0;
+		            		double lz = 0;
+		                	for(Light light : lights.values()) {
+		                		Color4f l = computeShading(light, ray, fir);
+			            		lx += l.x;
+			                	ly += l.y;
+			                	lz += l.z;
+		                	}
+	
+			              	r = (int)(Math.min(1, lx)*255);
+			              	g = (int)(Math.min(1, ly)*255);
+			              	b = (int)(Math.min(1, lz)*255);
+			             }
+		            	finalr = finalr + r;
+		            	finalg = finalg + g;
+		            	finalb = finalb + b;
             		}
-            	}
-            	
-            	
-            	if(fir.material!=null) {
-            		//mirror reflection;
-            		// TODO: Objective 3: compute the shaded result for the intersection point (perhaps requiring shadow rays)
-                	
-            		Color4f l = computeShading(ray, fir);
-            		double lx = l.x;
-                	double ly = l.y;
-                	double lz = l.z;
-                    
-	              	r = (int)(Math.min(1, lx)*255);
-	              	g = (int)(Math.min(1, ly)*255);
-	              	b = (int)(Math.min(1, lz)*255);
-	             }
-            	
-            	if(r==0&&g==0&&b==0) {
-            		r= (int)(255*c.x);
-                	g = (int)(255*c.y);
-                    b = (int)(255*c.z);
             	}
             	
                 
             	// TODO: Objective 8: do antialiasing by sampling more than one ray per pixel
+            	finalr = finalr/(render.samples*render.samples);
+            	finalg = finalg/(render.samples*render.samples);
+            	finalb = finalb/(render.samples*render.samples);
             	
-            	
-            	
-	           	
-            	
-                int argb = (a<<24 | r<<16 | g<<8 | b);    
+                int argb = (finala<<24 | finalr<<16 | finalg<<8 | finalb);    
                 
                 // update the render image
                 render.setPixel(j, i, argb);
@@ -121,8 +129,15 @@ public class Scene {
      * @param cam The camera.
      * @param ray Contains the generated ray.
      */
-	public static void generateRay(final int i, final int j, final double[] offset, final Camera cam, Ray ray) {
+	public static void generateRay(final int i, final int j, final int k, final int l,final int total, final double[] offset, final Camera cam, Ray ray) {
 		
+		double offsets = -offset[0]+offset[1];
+		double pixel = offsets/total;
+		double halfPixel = pixel/2;
+		//System.out.println(offsets);
+		double offseti = halfPixel+k*pixel;
+		double offsetj = halfPixel+l*pixel;
+		//System.out.println(offseti + ", "+ offsetj);
 		Point3d e = cam.from;
 		double d = e.z;
 		double angle = cam.fovy*Math.PI/180;
@@ -130,13 +145,13 @@ public class Scene {
 		double b = -t;
 		double aspectRatio = (double)cam.imageSize.width/(double)cam.imageSize.height;
 		//System.out.println(aspectRatio);
-		double l = b*aspectRatio;
+		double ll = b*aspectRatio;
 		double r = t*aspectRatio;
 		//System.out.println(l +", " + r + ", " +  ", " + b + ", " + t);
 		double nx = cam.imageSize.width;
 		double ny = cam.imageSize.height;
-		double u = l+((r-l)*(j+0.5)/nx);
-		double v = t+((b-t)*(i+0.5)/ny);
+		double u = ll+((r-ll)*(j+offseti)/nx);
+		double v = t+((b-t)*(i+offsetj)/ny);
 			
 		Vector3d cw = new Vector3d(cam.from.x-cam.to.x, cam.from.y-cam.to.y, cam.from.z-cam.to.z);
 		cw.normalize();
@@ -151,38 +166,37 @@ public class Scene {
 		ray.viewDirection = cd;
 	}
 	
-	public Color4f computeShading(Ray ray, IntersectResult fir) {
+	public Color4f computeShading(Light light, Ray ray, IntersectResult fir) {
 		Color4f la = ambientShading(fir);
 		float lx = la.x;
     	float ly = la.y;
     	float lz = la.z;
         
-    	for(Light light : lights.values()) {
     		
-    		IntersectResult shadResult = new IntersectResult();
-    		Ray shadowRay = new Ray();
-    		if(!inShadow(fir, light, surfaceList, shadResult, shadowRay)) {
-    			Color4f ld = lambertianShading(light, fir);
-    			lx += ld.x;
-    			ly += ld.y;
-    			lz += ld.z;
-    			
-    			if(fir.material.reflectable) {
-    				//System.out.println("was here");
-    				Color4f lm = mirrorReflection(light, surfaceList, fir, ray);
-    				lx += lm.x;
-    				ly += lm.y;
-    				lz += lm.z;
-    			}
-    			else {
-    				Color4f ls = specularShading(light, ray, fir);
-        			lx += ls.x;
-        			ly += ls.y;
-        			lz += ls.z;
-    			}
-    			
-    		}
-    	}
+		IntersectResult shadResult = new IntersectResult();
+		Ray shadowRay = new Ray();
+		if(!inShadow(fir, light, surfaceList, shadResult, shadowRay)) {
+			Color4f ld = lambertianShading(light, fir);
+			lx += ld.x;
+			ly += ld.y;
+			lz += ld.z;
+			
+			
+			if(!fir.material.reflectable) {
+				Color4f ls = specularShading(light, ray, fir);
+    			lx += ls.x;
+    			ly += ls.y;
+    			lz += ls.z;
+			}
+			
+		}
+    	if(fir.material.reflectable) {
+			//System.out.println("was here");
+			Color4f lm = mirrorReflection(light, surfaceList, fir, ray);
+			lx += lm.x;
+			ly += lm.y;
+			lz += lm.z;
+		}
     	Color4f result = new Color4f(lx, ly, lz, 1);
 		return result;
 	}
@@ -306,10 +320,16 @@ public class Scene {
 			IntersectResult rir = new IntersectResult();
 			intersectable.intersect(reflectRay, rir);
 			if(rir.material!=null) {
-				ans = computeShading(ray, rir);
-				ans.x = ans.x*0.4f;
-				ans.y = ans.y*0.4f;
-				ans.z = ans.z*0.4f;
+				Ray newRay = new Ray();
+				newRay.eyePoint = ray.eyePoint;
+				Vector3d newV = new Vector3d(rir.p.x-ray.eyePoint.x, rir.p.y-ray.eyePoint.y, rir.p.z-ray.eyePoint.z);
+				newV.normalize();
+				newRay.viewDirection = newV;
+				ans = computeShading(light, newRay, rir);
+				//ans = rir.material.diffuse;
+				ans.x = ans.x*ir.material.specular.x;
+				ans.y = ans.y*ir.material.specular.y;
+				ans.z = ans.z*ir.material.specular.z;
 			}
 			
 		}

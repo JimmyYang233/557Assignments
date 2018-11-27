@@ -8,11 +8,11 @@
   <material name="green" diffuse="0 1 0" specular="0.5 0.5 0.5" hardness="16" />
   <material name="blue" diffuse="0 0 1" specular="0.5 0.5 0.5" hardness="16" />
   <material name="black" diffuse="0 0 0" specular="0 0 0" hardness="0" />
-  <material name="white" diffuse="1 1 1" specular="0 0 0" hardness="0" reflectable="true"/>
+  <material name="white" diffuse="0.3 0.3 0.3" specular="0.7 0.7 0.7" hardness="0" reflectable="true"></material>
   
   <!-- render configuration -->
-  <render bgcolor="0.53 0.80 0.99" output="TwoSpheresPlane.png" samples="12" >
-    <camera name="myCamera" from="0 4 6" to="0 2 0" up="0 1 0" fovy="45" width="640" height="480" />
+  <render bgcolor="0.53 0.80 0.99" output="TwoSpheresPlane.png" samples="1" >
+    <camera name="myCamera" from="0 2 6" to="0 1 0" up="0 1 0" fovy="45" width="640" height="480" />
   </render> 
   
   <!-- scene objects -->
