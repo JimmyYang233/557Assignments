@@ -168,7 +168,7 @@ public class Scene {
     			lz += ld.z;
     			
     			if(fir.material.reflectable) {
-    				System.out.println("was here");
+    				//System.out.println("was here");
     				Color4f lm = mirrorReflection(light, surfaceList, fir, ray);
     				lx += lm.x;
     				ly += lm.y;
@@ -204,7 +204,7 @@ public class Scene {
 		shadowRay = new Ray(result.p, new Vector3d(light.from.x-result.p.x, light.from.y-result.p.y, light.from.z-result.p.z));
 		Point3d p = shadowRay.eyePoint;
 		Vector3d d = shadowRay.viewDirection;
-		Point3d finalP = new Point3d(p.x+0.001*d.x, p.y+0.001*d.y, p.z+0.001*d.z);
+		Point3d finalP = new Point3d(p.x+0.01*d.x, p.y+0.01*d.y, p.z+0.01*d.z);
 		shadowRay.eyePoint = finalP;
 		for(Intersectable intersectable : sl) {
 			intersectable.intersect(shadowRay, shadowResult);
