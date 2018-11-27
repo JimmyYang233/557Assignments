@@ -11,6 +11,8 @@ import javax.vecmath.Color4f;
  */
 public class Material {
 	
+	public boolean reflectable = false;
+	
 	/** Static member to access all the materials */
 	public static Map<String,Material> materialMap = new HashMap<String,Material>();
 	
@@ -31,6 +33,18 @@ public class Material {
      */
     public Material() {
     	// do nothing
+    }
+    
+    /**
+     * Copy constructor
+     * @param material
+     */
+    public Material(Material material) {
+    	
+		this.diffuse = new Color4f(material.diffuse);
+		this.specular = new Color4f(material.specular);
+		this.shinyness = material.shinyness;
+		this.reflectable = material.reflectable;
     }
     
 }

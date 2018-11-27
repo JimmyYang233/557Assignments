@@ -43,7 +43,7 @@ public class Parser {
             } else if ( nodeName.equalsIgnoreCase( "render" ) ) {                
                 scene.render = Parser.createRender(n);
             } else if ( nodeName.equalsIgnoreCase( "node" ) ) {
-            	System.out.println("Was here");
+            	//System.out.println("Was here");
             	scene.surfaceList.add( Parser.createSceneNode(n) );
             } else if ( nodeName.equalsIgnoreCase( "plane" ) ) {
         		Plane plane = Parser.createPlane(n);
@@ -283,6 +283,11 @@ public class Parser {
 	    	Node hardnessAttr = dataNode.getAttributes().getNamedItem("hardness");
 	    	if ( hardnessAttr != null ) {
 	    		material.shinyness = Float.parseFloat( hardnessAttr.getNodeValue() );
+	    	}
+	    	Node reflectable = dataNode.getAttributes().getNamedItem("reflectable");
+	    	if(reflectable!=null) {
+	    		//System.out.println("Was here");
+	    		material.reflectable = true;
 	    	}
 		}
 		return material;

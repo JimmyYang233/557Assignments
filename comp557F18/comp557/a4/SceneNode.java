@@ -59,7 +59,7 @@ public class SceneNode extends Intersectable {
     	// TODO: Objective 7: implement hierarchy with instances
 
     	//System.out.println(M);
-    	//Minv.invert(M);
+    	Minv.invert(M);
     	double px = ray.eyePoint.x;
     	double py = ray.eyePoint.y;
     	double pz = ray.eyePoint.z;
@@ -84,40 +84,42 @@ public class SceneNode extends Intersectable {
     	ray.viewDirection = newd;
     	for(Intersectable intersectable : children) {
     		IntersectResult ir = new IntersectResult(); 
-    		intersectable.intersect(ray, ir);
-    		Point3d p = ir.p;
-			 px = p.x;
-			 py = p.y;
-			 pz = p.z;
-			 a = M.m00;
-			 b = M.m01;
-	    	 c = M.m02;
-	    	 d = M.m03;
-	    	 e = M.m10;
-	    	 f = M.m11;
-	    	 g = M.m12;
-	    	 h = M.m13;
-	    	 i = M.m20;
-	    	 j = M.m21;
-	    	 k = M.m22;
-	    	 l = M.m23;
-	    	newP = new Point3d(a*px+b*py+c*pz+d, e*px+f*py+g*pz+h, i*px+j*py+k*pz+l);
-	    	ir.p = newP; 
-	    	Vector3d n = ir.n;
-	    	double nx = n.x;
-	    	double ny = n.y;
-	    	double nz = n.z;
-	    	Vector3d newN = new Vector3d(a*nx+b*ny+c*nz, e*nx+f*ny+g*nz, i*nx+j*ny+k*nz);
-	    	ir.n = newN;
+    		Ray newRay = new Ray(ray.eyePoint, ray.viewDirection);
+    		intersectable.intersect(newRay, ir);
     		if(ir.material!=null) {
     			if(ir.t<result.t) {
         			result.t = ir.t;
         	    	result.p = ir.p;
-        			result.material = ir.material;
+        			result.material = new Material(ir.material);
         	    	result.n = ir.n;
         		}
     		}
     	}
+    	Point3d p = result.p;
+		px=p.x;
+		py=p.y;
+		pz=p.z;
+		a=M.m00;
+		b=M.m01;
+		c=M.m02;
+		d=M.m03;
+		e=M.m10;
+		f=M.m11;
+		g=M.m12;
+		h=M.m13;
+		i=M.m20;
+		j=M.m21;
+		k=M.m22;
+		l=M.m23;
+		newP = new Point3d(a*px+b*py+c*pz+d, e*px+f*py+g*pz+h, i*px+j*py+k*pz+l);
+		result.p = newP; 
+		Vector3d n = result.n;
+		double nx = n.x;
+		double ny = n.y;
+		double nz = n.z;
+		Vector3d newN = new Vector3d(a*nx+b*ny+c*nz, e*nx+f*ny+g*nz, i*nx+j*ny+k*nz);
+		newN.normalize();
+		result.n = newN;
 //    	if(result.material==null) {
 //    		result.material = new Material();
 //    		result.material.diffuse = new Color4f(this.material.diffuse);

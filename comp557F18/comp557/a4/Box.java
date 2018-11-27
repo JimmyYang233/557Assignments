@@ -69,10 +69,7 @@ public class Box extends Intersectable {
 			result.material = null;
 		}
 		else {
-			result.material = new Material();
-    		result.material.diffuse = new Color4f(this.material.diffuse);
-    		result.material.specular = new Color4f(this.material.specular);
-    		result.material.shinyness = this.material.shinyness;
+			result.material = new Material(this.material);
     		
     		if(tmin<0) {
     			if(tmax<0) {

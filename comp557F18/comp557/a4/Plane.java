@@ -37,7 +37,7 @@ public class Plane extends Intersectable {
     	Point3d p0 = new Point3d(0,0,0);
     	double ln = l.x*n.x+l.y*n.y+l.z*n.z;
     	if(ln != 0) {
-    		result.t = ((p0.x-l0.x)*n.x+(p0.y-l0.y)*n.y+(p0.z*l0.z)*n.z)/ln;
+    		result.t = ((p0.x-l0.x)*n.x+(p0.y-l0.y)*n.y+(p0.z-l0.z)*n.z)/ln;
     		//System.out.println(result.t);
     		if(result.t>0) {
     			//compute p
@@ -55,16 +55,10 @@ public class Plane extends Intersectable {
         			z--;
         		}
         		if((x%2==0&&z%2==0)||(x%2!=0&&z%2!=0)) {
-        			result.material = new Material();
-            		result.material.diffuse = new Color4f(this.material.diffuse);
-            		result.material.specular = new Color4f(this.material.specular);
-            		result.material.shinyness = this.material.shinyness;
+        			result.material = new Material(this.material);
         		}
         		else {
-        			result.material = new Material();
-            		result.material.diffuse = new Color4f(this.material2.diffuse);
-            		result.material.specular = new Color4f(this.material2.specular);
-            		result.material.shinyness = this.material2.shinyness;
+        			result.material = new Material(this.material2);
         		}
     		}
     	}

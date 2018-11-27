@@ -55,10 +55,7 @@ public class Sphere extends Intersectable {
     	}
     	else if (triangle == 0) {
     		//1 intersection, just find it.
-    		result.material = new Material();
-    		result.material.diffuse = new Color4f(this.material.diffuse);
-    		result.material.specular = new Color4f(this.material.specular);
-    		result.material.shinyness = this.material.shinyness;
+    		result.material = new Material(this.material);
     		//compute t
     		result.t = -b/(2*a);
     		if(result.t<0) {
@@ -77,10 +74,7 @@ public class Sphere extends Intersectable {
     	
     	else if(triangle>0) {
     		// 2 intersections, find the closest one.
-    		result.material = new Material();
-    		result.material.diffuse = new Color4f(this.material.diffuse);
-    		result.material.specular = new Color4f(this.material.specular);
-    		result.material.shinyness = this.material.shinyness;
+    		result.material = new Material(this.material);
     		//compute t
     		result.t = -(b+Math.sqrt(triangle))/(2*a);
     		double t2 = -(b-Math.sqrt(triangle))/(2*a);

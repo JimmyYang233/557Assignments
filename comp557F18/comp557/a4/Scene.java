@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import javax.vecmath.Color3f;
 import javax.vecmath.Color4f;
+import javax.vecmath.Matrix3d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
@@ -70,30 +71,24 @@ public class Scene {
             	
             	
             	if(fir.material!=null) {
-            		Color4f la = ambientShading(fir);
-            		double lx = la.x;
-                	double ly = la.y;
-                	double lz = la.z;
-                    // TODO: Objective 3: compute the shaded result for the intersection point (perhaps requiring shadow rays)
-                	for(Light light : lights.values()) {
-                		IntersectResult shadResult = new IntersectResult();
-                		Ray shadowRay = new Ray();
-                		if(!inShadow(fir, light, surfaceList, shadResult, shadowRay)) {
-                			Color4f ld = lambertianShading(light, fir);
-                			lx += ld.x;
-                			ly += ld.y;
-                			lz += ld.z;
-                			Color4f ls = specularShading(light, ray, fir);
-                			lx += ls.x;
-                			ly += ls.y;
-                			lz += ls.z;
-                		}
-            			
-                	}
+            		//mirror reflection;
+            		// TODO: Objective 3: compute the shaded result for the intersection point (perhaps requiring shadow rays)
+                	
+            		Color4f l = computeShading(ray, fir);
+            		double lx = l.x;
+                	double ly = l.y;
+                	double lz = l.z;
+                    
 	              	r = (int)(Math.min(1, lx)*255);
 	              	g = (int)(Math.min(1, ly)*255);
 	              	b = (int)(Math.min(1, lz)*255);
 	             }
+            	
+            	if(r==0&&g==0&&b==0) {
+            		r= (int)(255*c.x);
+                	g = (int)(255*c.y);
+                    b = (int)(255*c.z);
+            	}
             	
                 
             	// TODO: Objective 8: do antialiasing by sampling more than one ray per pixel
@@ -154,6 +149,42 @@ public class Scene {
 		cd.normalize();
 		ray.eyePoint = e;
 		ray.viewDirection = cd;
+	}
+	
+	public Color4f computeShading(Ray ray, IntersectResult fir) {
+		Color4f la = ambientShading(fir);
+		float lx = la.x;
+    	float ly = la.y;
+    	float lz = la.z;
+        
+    	for(Light light : lights.values()) {
+    		
+    		IntersectResult shadResult = new IntersectResult();
+    		Ray shadowRay = new Ray();
+    		if(!inShadow(fir, light, surfaceList, shadResult, shadowRay)) {
+    			Color4f ld = lambertianShading(light, fir);
+    			lx += ld.x;
+    			ly += ld.y;
+    			lz += ld.z;
+    			
+    			if(fir.material.reflectable) {
+    				System.out.println("was here");
+    				Color4f lm = mirrorReflection(light, surfaceList, fir, ray);
+    				lx += lm.x;
+    				ly += lm.y;
+    				lz += lm.z;
+    			}
+    			else {
+    				Color4f ls = specularShading(light, ray, fir);
+        			lx += ls.x;
+        			ly += ls.y;
+        			lz += ls.z;
+    			}
+    			
+    		}
+    	}
+    	Color4f result = new Color4f(lx, ly, lz, 1);
+		return result;
 	}
 
 	/**
@@ -256,5 +287,32 @@ public class Scene {
 		result.y = (float) (ir.material.diffuse.y*ambient.y*0.05);
 		result.z = (float) (ir.material.diffuse.z*ambient.z*0.05);
 		return result;
+	}
+	
+	public Color4f mirrorReflection(Light light, List<Intersectable> surfaceList, IntersectResult ir, Ray ray) {
+		Color4f ans = new Color4f();
+		Vector3d n = ir.n;
+		Vector3d v = new Vector3d(-ray.viewDirection.x, -ray.viewDirection.y, -ray.viewDirection.z);
+		Matrix3d nn2 = new Matrix3d(new double[] {
+				2*n.x*n.x, 2*n.x*n.y, 2*n.x*n.z,
+				2*n.y*n.x, 2*n.y*n.y, 2*n.y*n.z,
+				2*n.z*n.x, 2*n.z*n.y, 2*n.z*n.z
+		});
+		Vector3d nn2v = new Vector3d(nn2.m00*v.x+nn2.m01*v.y+nn2.m02*v.z, nn2.m10*v.x+nn2.m11*v.y+nn2.m12*v.z, nn2.m20*v.x+nn2.m21*v.y+nn2.m22*v.z);
+		Vector3d r = new Vector3d(nn2v.x-v.x, nn2v.y-v.y, nn2v.z-v.z);
+		Point3d finalP = new Point3d(ir.p.x+0.001*r.x, ir.p.y+0.001*r.y, ir.p.z+0.001*r.z);
+		Ray reflectRay = new Ray(finalP, r);
+		for(Intersectable intersectable : surfaceList) {
+			IntersectResult rir = new IntersectResult();
+			intersectable.intersect(reflectRay, rir);
+			if(rir.material!=null) {
+				ans = computeShading(ray, rir);
+				ans.x = ans.x*0.4f;
+				ans.y = ans.y*0.4f;
+				ans.z = ans.z*0.4f;
+			}
+			
+		}
+		return ans;
 	}
 }
