@@ -76,23 +76,55 @@ public class Sphere extends Intersectable {
     		// 2 intersections, find the closest one.
     		result.material = new Material(this.material);
     		//compute t
-    		result.t = -(b+Math.sqrt(triangle))/(2*a);
+    		double t1= -(b+Math.sqrt(triangle))/(2*a);
     		double t2 = -(b-Math.sqrt(triangle))/(2*a);
-    		if(t2<result.t||result.t<0) {
-    			result.t = t2;
+    		if(t1>0&&t2>0) {
+    			if(t1<t2) {
+    				result.t = t1;
+    			}
+    			else {
+    				result.t = t2;
+    			}
+    			//compute p
+        		result.p.x = o.x + result.t*l.x;
+        		result.p.y = o.y + result.t*l.y;
+        		result.p.z = o.z + result.t*l.z;
+        		//compute n
+    			result.n.x = result.p.x-center.x;
+        		result.n.y = result.p.y-center.y;
+        		result.n.z = result.p.z-center.z;
+        		result.n.normalize();
     		}
-    		if(result.t<0) {
+    		else if(t1<=0&&t2>0) {
+    			result.t = t2;
+    			//compute p
+        		result.p.x = o.x + result.t*l.x;
+        		result.p.y = o.y + result.t*l.y;
+        		result.p.z = o.z + result.t*l.z;
+        		//compute n
+    			result.n.x = -result.p.x+center.x;
+        		result.n.y = -result.p.y+center.y;
+        		result.n.z = -result.p.z+center.z;
+        		result.n.normalize();
+    		}
+    		else if(t1>0&&t2<=0) {
+    			result.t = t1;
+    			//compute p
+        		result.p.x = o.x + result.t*l.x;
+        		result.p.y = o.y + result.t*l.y;
+        		result.p.z = o.z + result.t*l.z;
+        		//compute n
+    			result.n.x = -result.p.x+center.x;
+        		result.n.y = -result.p.y+center.y;
+        		result.n.z = -result.p.z+center.z;
+        		result.n.normalize();
+    		}
+    		else {
     			result.material = null;
     		}
-    		//compute p
-    		result.p.x = o.x + result.t*l.x;
-    		result.p.y = o.y + result.t*l.y;
-    		result.p.z = o.z + result.t*l.z;
-    		//compute n
-    		result.n.x = result.p.x-center.x;
-    		result.n.y = result.p.y-center.y;
-    		result.n.z = result.p.z-center.z;
-    		result.n.normalize();
+    		
+    		
+    		
     	}
     	
     }

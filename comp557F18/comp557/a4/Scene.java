@@ -231,7 +231,7 @@ public class Scene {
 		shadowRay.eyePoint = finalP;
 		for(Intersectable intersectable : sl) {
 			intersectable.intersect(shadowRay, shadowResult);
-			if(shadowResult.material!=null) {
+			if(shadowResult.material!=null&&shadowResult.material.refractable==false) {
 				//System.out.println(shadowResult.p + ", " + result.p);
 				return true;
 			}
@@ -379,9 +379,11 @@ public class Scene {
 		}
 		Vector3d n = ir.n;
 		Vector3d I = ray.viewDirection;
+		//System.out.println(I +", "  + n);
 		Vector3d u = new Vector3d(-I.x, -I.y, -I.z);
 		double angle = u.angle(n);
 		double nn = n1/n2;
+		//System.out.println(n1 + ", " + n2);
 		double c1 = n.dot(I);
 		double k = 1-nn*nn*(1-Math.cos(angle)*Math.cos(angle));
 		if(k<=0) {
@@ -390,15 +392,17 @@ public class Scene {
 		else {
 			double c2 = Math.sqrt(k);
 			Vector3d T = new Vector3d(nn*I.x+(nn*c1-c2)*n.x, nn*I.y+(nn*c1-c2)*n.y, nn*I.z+(nn*c1-c2)*n.z);
-			T.normalize();
-			Point3d finalP = new Point3d(ir.p.x+0.00001*T.x, ir.p.y+0.00001*T.y, ir.p.z+0.00001*T.z);
+			
+			Point3d finalP = new Point3d(ir.p.x+0.000001*T.x, ir.p.y+0.000001*T.y, ir.p.z+0.000001*T.z);
+			//System.out.println(ir.p + ", " + finalP);
 			//System.out.println("was here");
 			//System.out.println(ir.material.name);
 			Ray ans = new Ray(finalP, T);
 			n.negate();
-			double newAngle = n.angle(T);
-			System.out.println(angle + ", " + newAngle);
+			//double newAngle = n.angle(T);
+			//System.out.println(angle + ", " + newAngle);
 			ans.n1 = n2;
+			//System.out.println(ans.n1);
 			return ans;
 		}
 	}
