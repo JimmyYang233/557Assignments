@@ -289,6 +289,12 @@ public class Parser {
 	    		//System.out.println("Was here");
 	    		material.reflectable = true;
 	    	}
+	    	Node refractable = dataNode.getAttributes().getNamedItem("refractable");
+	    	if(refractable!=null) {
+	    		//System.out.println(material.name);
+	    		material.refractable = true; 
+	    		material.refractableN = Double.parseDouble(refractable.getNodeValue());
+	    	}
 		}
 		return material;
 	}

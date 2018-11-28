@@ -5,6 +5,7 @@ import javax.vecmath.Vector3d;
 
 public class Ray {
 	
+	public double n1 = 1;
 	/** Originating point for the ray */
 	public Point3d eyePoint = new Point3d( 0, 0, 0 );
 	

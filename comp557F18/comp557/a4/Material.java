@@ -11,7 +11,13 @@ import javax.vecmath.Color4f;
  */
 public class Material {
 	
+	public int numOfReflect = 0;
+	
 	public boolean reflectable = false;
+	
+	public boolean refractable = false;
+	
+	public double refractableN = 1;
 	
 	/** Static member to access all the materials */
 	public static Map<String,Material> materialMap = new HashMap<String,Material>();
@@ -41,10 +47,13 @@ public class Material {
      */
     public Material(Material material) {
     	
+    	this.name = material.name;
 		this.diffuse = new Color4f(material.diffuse);
 		this.specular = new Color4f(material.specular);
 		this.shinyness = material.shinyness;
 		this.reflectable = material.reflectable;
+		this.refractable = material.refractable;
+		this.refractableN = material.refractableN;
     }
     
 }
