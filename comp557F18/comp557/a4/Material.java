@@ -54,6 +54,7 @@ public class Material {
 		this.reflectable = material.reflectable;
 		this.refractable = material.refractable;
 		this.refractableN = material.refractableN;
+		this.numOfReflect = material.numOfReflect;
     }
     
 }

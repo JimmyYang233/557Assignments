@@ -31,6 +31,7 @@ import com.jogamp.opengl.math.Matrix4;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.gl2.GLUT;
 
+import comp557.a4.FastPoissonDisk;
 import mintools.parameters.BooleanParameter;
 import mintools.parameters.DoubleParameter;
 import mintools.parameters.IntParameter;

@@ -8,31 +8,28 @@
   <material name="blue" diffuse="0 0 1" specular="0.5 0.5 0.5" hardness="16"></material>
   <material name="black" diffuse="0 0 0" specular="0 0 0" hardness="0" />
   <material name="white" diffuse="0.2 0.2 0.2" specular="0.8 0.8 0.8"
-  	hardness="16" reflectable="true">
+  	hardness="16">
   </material>
   <material name="mirror" diffuse="0 0 0" specular="1 1 1" reflectable="true"></material>
   <material name="glass" diffuse="0.3 0 0" specular="1 1 1" refractable="1.5"></material>
 
   <!-- render configuration -->
-  <render bgcolor="0 0 0" output="TwoSpheresPlane.png" samples="5" >
-    <camera name="myCamera" from="0 4 6" to="-1 1.1 0.5" up="0 1 0" fovy="45" width="640" height="480" />
+  <render bgcolor="0 0 0" output="TwoSpheresPlane.png" samples="1" >
+    <camera name="myCamera" from="-4 3 4" to="0 1.1 0" up="0 1 0" fovy="45" width="640" height="480" />
   </render> 
   
   <!-- scene objects -->
   <node name="root" >
-	  <sphere center="-1 1.1 0.5" radius="1.1" >
-		<material ref="glass" />
+	  <sphere center="0 1.1 0" radius="1.1" >
+		<material ref="red" />
 	  </sphere>
-	  <node name="meshStack" translation="1.2 1 1.2">
-	  	<mesh name="mesh" filename="comp557F18/a4data/mesh.obj">
-	  		<material ref="green"></material></mesh></node>
 	  
 	  <plane coeff="0 1 0 0">
 	  	<material ref="white"></material>
 	  	<material2 ref="white"></material2></plane>
-  	<node name="box" rotation="0 45 0" scale="2 2 2" translation="-2 0 -3"><box min="0 0 0" max="1 1 1">
-	  	<material ref="blue"></material></box></node>
-  	<box min="-5 0 -5" max="5 10 -5">
+  	<box min="4 0 -5" max="4 10 5">
+  		<material ref="mirror"></material></box>
+  	<box min="-5 0 -4" max="5 10 -4">
   		<material ref="mirror"></material></box>
   </node>
   

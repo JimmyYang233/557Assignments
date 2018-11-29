@@ -97,7 +97,7 @@ public class Box extends Intersectable {
     		}
     		//System.out.println(tmin+ ", " + tmax);
     		//System.out.println(p);
-    		if(p.x<xMin+0.001&&p.x>xMin-0.001) {
+    		if(p.x<xMin+0.00001&&p.x>xMin-0.00001) {
     			result.n = new Vector3d(-1,0,0);
     		}
     		else if(p.x<xMax+0.00001&&p.x>xMax-0.00001) {
