@@ -334,6 +334,10 @@ public class Parser {
             render.samples = s.nextInt(); 
 			s.close();
 		}
+		Node motionBlur = dataNode.getAttributes().getNamedItem("motionBlur");
+		if(motionBlur!=null) {
+			render.motionBlur = Integer.parseInt(motionBlur.getNodeValue());
+		}
     	NodeList nodeList = dataNode.getChildNodes();
     	for (int i = 0; i < nodeList.getLength(); i++) {
     		Node n = nodeList.item(i);
@@ -369,6 +373,7 @@ public class Parser {
             double y = s.nextDouble();
             double z = s.nextDouble();
             sphere.center = new Point3d(x, y, z);
+            sphere.initialPosition = new Point3d(x, y, z);
             s.close();
 		}
 		Node radiusAttr = dataNode.getAttributes().getNamedItem("radius");

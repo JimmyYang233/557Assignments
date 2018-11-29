@@ -59,6 +59,7 @@ public class Render extends WindowAdapter {
     /** Flag to indicate when rendering should stop */
     private boolean done;
     
+    public int motionBlur = 1;
     /**
      * Default constructor. Creates a default camera and black background color.
      * @param dataNode

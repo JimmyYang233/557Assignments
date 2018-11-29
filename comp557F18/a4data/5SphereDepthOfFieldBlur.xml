@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<scene ambient="0.2 0.2 0.2">
+  <!-- define camera,material,lights here -->
+  <light name="myLight" color="0.8 0.8 0.8" from="10 5 10 " power="0.6" type="point" ></light>
+  <light name="myLight2" color="0.8 0.8 0.8" from="-10 10 2 " power="0.9" type="point" />
+  <material name="red" diffuse="1 0 0" specular="0.5 0.5 0.5"
+  	hardness="50"/>
+  <material name="green" diffuse="0 1 0" specular="0.5 0.5 0.5" hardness="16" />
+  <material name="blue" diffuse="0 0 1" specular="0.5 0.5 0.5" hardness="16" />
+  <material name="black" diffuse="0 0 0" specular="0 0 0" hardness="0" />
+  <material name="white" diffuse="0.3 0.3 0.3" specular="0.7 0.7 0.7" hardness="0" reflectable="true"></material>
+  
+  <!-- render configuration -->
+  <render bgcolor="0.53 0.80 0.99" output="5SphereDepthOfField.png" samples="5" >
+    <camera name="myCamera" from="0 3 8" to="0 0.5 0" up="0 1 0" fovy="45" width="640" height="480" depthOfField="0.06"/>
+  </render> 
+  
+  <!-- scene objects --><sphere center="0 0.5 0" radius="0.5">
+		<material ref="red" />
+	  </sphere>
+  <sphere center="2 1 -4" radius="1">
+		<material ref="blue" ></material>
+	  </sphere>
+  <sphere center="8 2 -16" radius="2">
+  	<material ref="green"></material></sphere>
+  <plane coeffs="0 1 0 0">
+		<material ref="white" />
+		<material2 ref="white" />
+	  </plane>
+	
+</scene>

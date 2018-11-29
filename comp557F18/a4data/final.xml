@@ -14,7 +14,7 @@
   <material name="glass" diffuse="0 0 0" specular="1 1 1" refractable="1.5"></material>
 
   <!-- render configuration -->
-  <render bgcolor="0 0 0" output="TwoSpheresPlane.png" samples="5" >
+  <render bgcolor="0 0 0" output="final.png" samples="5" >
     <camera name="myCamera" from="0 4 6" to="-1 1.1 1.6" up="0 1 0"
     	fovy="45" width="640" height="480" depthOfField="0.04"/>
   </render> 
