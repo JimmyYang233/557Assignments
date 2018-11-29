@@ -25,6 +25,10 @@ public class Camera {
 
 	/** Vertical field of view (in degrees), default is 45 degrees */
 	public double fovy = 45.0;
+	
+	public boolean isDepthOfField = false;
+	
+	public double lensRadius = 0.0;
 
 	/** The rendered image size */
 	public Dimension imageSize = new Dimension(640, 480);

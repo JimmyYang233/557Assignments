@@ -47,6 +47,7 @@ public class Scene {
         render.init(w, h, showPanel);
         
         FastPoissonDisk disk = new FastPoissonDisk(0.05);
+        FastPoissonDisk lightDisk = new FastPoissonDisk(0.05);
         
         for ( int i = 0; i < h && !render.isDone(); i++ ) {
             for ( int j = 0; j < w && !render.isDone(); j++ ) {
@@ -62,64 +63,78 @@ public class Scene {
             	for(int k = 0; k<render.samples;k++) {
             		for(int m = 0;m<render.samples;m++) {
             			//ANTI-Aliasing;
-            			for(int q = 0; q<15; q++) {
-            				//Depth Of field
+        				//Depth Of field
+            			double x = 0;
+            			double y = 0;
+            			if(cam.isDepthOfField) {
             				Point2d p = new Point2d();
-            				disk.get(p, q, 15);
-            				double x = p.x*0.07;
-            				double y = p.y*0.07;
-            				//System.out.println(x + ", " + y);
-            				Ray ray = new Ray();
-    		            	Scene.generateRay(i, j, k, m, x, y, render.samples, offset, cam, ray);
-    		            	
-    		                // TODO: Objective 2: test for intersection with scene surfaces
-    		            	Color3f c = new Color3f(render.bgcolor);
-    		            	int r = (int)(255*c.x);
-    		            	int g = (int)(255*c.y);
-    		                int b = (int)(255*c.z);
-    		            	IntersectResult fir = new IntersectResult();
-    		                //System.out.println(surfaceList.size());
-    		            	for(Intersectable intersectable : surfaceList) {
-    		            		IntersectResult ir = new IntersectResult();
-    		            		intersectable.intersect(ray, ir);
-    		            		if(ir.t<=fir.t) {
-    		            			fir = ir;
-    		            		}
-    		            	}
-    		            	
-    	            		// TODO: Objective 3: compute the shaded result for the intersection point (perhaps requiring shadow rays)
-    	            		double lx = 0;
-    	            		double ly = 0;
-    	            		double lz = 0;
-    	            		if(fir.material !=null) {
-    	            			for(Light light : lights.values()) {
-    		                		Vector3d newV = new Vector3d();
-    		                		newV.x = fir.p.x-light.from.x;
-    		                		newV.y = fir.p.y-light.from.y;
-    		                		newV.z = fir.p.y-light.from.z;
-    		                		Ray lightRay = new Ray(light.from, newV);
-    		                		Color4f l = computeShading(light, lightRay, ray, fir);
-    			            		lx += l.x;
-    			                	ly += l.y;
-    			                	lz += l.z;
-    			                	r = (int)(Math.min(1, lx)*255);
-    				              	g = (int)(Math.min(1, ly)*255);
-    				              	b = (int)(Math.min(1, lz)*255);
-    		                	}
-    	            		}
-    		            	finalr = finalr + r;
-    		            	finalg = finalg + g;
-    		            	finalb = finalb + b;
-                		}
-                	}
+            				disk.get(p, k*render.samples+m, render.samples*render.samples);
+            				x = p.x*cam.lensRadius*2;
+            				y = p.y*cam.lensRadius*2;
+            			}
+        				
+        				Ray ray = new Ray();
+		            	Scene.generateRay(i, j, k, m, x, y, render.samples, offset, cam, ray);
+		            	
+		                // TODO: Objective 2: test for intersection with scene surfaces
+		            	Color3f c = new Color3f(render.bgcolor);
+		            	int r = (int)(255*c.x);
+		            	int g = (int)(255*c.y);
+		                int b = (int)(255*c.z);
+		            	IntersectResult fir = new IntersectResult();
+		                //System.out.println(surfaceList.size());
+		            	for(Intersectable intersectable : surfaceList) {
+		            		IntersectResult ir = new IntersectResult();
+		            		intersectable.intersect(ray, ir);
+		            		if(ir.t<=fir.t) {
+		            			fir = ir;
+		            		}
+		            	}
+		            	
+	            		// TODO: Objective 3: compute the shaded result for the intersection point (perhaps requiring shadow rays)
+	            		double lx = 0;
+	            		double ly = 0;
+	            		double lz = 0;
+	            		if(fir.material !=null) {
+	            			for(Light theLight : lights.values()) {
+	            				//Area Light
+	            				Light light = new Light(theLight);
+	            				if(theLight.type.equals("area")) {
+	            					Point2d p = new Point2d();
+		            				lightDisk.get(p, k*render.samples+m, render.samples*render.samples);
+		            				double lightx = p.x*light.lightRadius*2;
+		            				double lightz = p.y*light.lightRadius*2;
+		            				light.from.x = light.from.x+lightx;
+		            				light.from.z = light.from.z+lightz;
+		            				//System.out.println(light.from);
+	            				}
+	            				
+		                		Vector3d newV = new Vector3d();
+		                		newV.x = fir.p.x-light.from.x;
+		                		newV.y = fir.p.y-light.from.y;
+		                		newV.z = fir.p.y-light.from.z;
+		                		Ray lightRay = new Ray(light.from, newV);
+		                		Color4f l = computeShading(light, lightRay, ray, fir);
+			            		lx += l.x;
+			                	ly += l.y;
+			                	lz += l.z;
+			                	r = (int)(Math.min(1, lx)*255);
+				              	g = (int)(Math.min(1, ly)*255);
+				              	b = (int)(Math.min(1, lz)*255);
+		                	}
+	            		}
+		            	finalr = finalr + r;
+		            	finalg = finalg + g;
+		            	finalb = finalb + b;
+            		}
             	}
 	            		
             	
                 
             	// TODO: Objective 8: do antialiasing by sampling more than one ray per pixel
-            	finalr = finalr/(render.samples*render.samples*15);
-            	finalg = finalg/(render.samples*render.samples*15);
-            	finalb = finalb/(render.samples*render.samples*15);
+            	finalr = finalr/(render.samples*render.samples);
+            	finalg = finalg/(render.samples*render.samples);
+            	finalb = finalb/(render.samples*render.samples);
             	
                 int argb = (finala<<24 | finalr<<16 | finalg<<8 | finalb);    
                 
@@ -373,12 +388,14 @@ public class Scene {
 		if(n1==1) {
 			n2 = ir.material.refractableN;
 		}
+		//System.out.println(ir.n);
 		Vector3d n = ir.n;
 		Vector3d I = ray.viewDirection;
 		//System.out.println(I +", "  + n);
 		Vector3d u = new Vector3d(-I.x, -I.y, -I.z);
 		double angle = u.angle(n);
 		double nn = n1/n2;
+		System.out.println(u + ", " + angle);
 		if(angle>Math.PI/2) {
 			//System.out.println("Angle bigger" + nn);
 			//angle = Math.PI/2;

@@ -19,11 +19,24 @@ public class Light {
     
     /** Type of light, default is a point light */
     public String type = "point";
+    
+    public double lightRadius = 0;
 
     /**
      * Default constructor 
      */
     public Light() {
     	// do nothing
+    }
+    
+    /**
+     * Copy constructor
+     */
+    public Light(Light light) {
+    	this.color = new Color4f(light.color);
+    	this.from = new Point3d(light.from);
+    	this.power = light.power;
+    	this.type = light.type;
+    	this.lightRadius = light.lightRadius;
     }
 }

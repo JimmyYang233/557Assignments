@@ -190,7 +190,12 @@ public class Parser {
         Node typeAttr = dataNode.getAttributes().getNamedItem("type");
         if ( typeAttr != null ) {
         	light.type = typeAttr.getNodeValue();
-        }        
+        }
+        
+        Node lightRadius = dataNode.getAttributes().getNamedItem("lightRadius");
+        if(lightRadius!=null) {
+        	light.lightRadius = Double.parseDouble(lightRadius.getNodeValue());
+        }
 		return light;
 	}
 	
@@ -241,6 +246,11 @@ public class Parser {
         Node heightAttr = dataNode.getAttributes().getNamedItem("height");
         if ( heightAttr != null ) {
             camera.imageSize.height = Integer.parseInt( heightAttr.getNodeValue() );        	
+        }
+        Node isDepthOfField = dataNode.getAttributes().getNamedItem("depthOfField");
+        if(isDepthOfField!=null) {
+        	camera.isDepthOfField = true;
+        	camera.lensRadius = Double.parseDouble(isDepthOfField.getNodeValue());
         }
         
 		return camera;
