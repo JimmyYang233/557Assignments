@@ -1,21 +1,21 @@
 <?xml version="1.0"?>
 <scene ambient="0.2 0.2 0.2">
   <!-- define camera,material,lights here -->
-  <light name="myLight" color="0.8 0.8 0.8" from="10 5 10 " power="0.6" type="area" lightRadius="0.5"/>
-  <light name="myLight2" color="0.8 0.8 0.8" from="-10 10 2 " power="0.9" type="area" lightRadius="0.5"/>
+  <light name="myLight" color="0.8 0.8 0.8" from="10 5 10 " power="0.6" type="point" lightRadius="0.5"/>
+  <light name="myLight2" color="0.8 0.8 0.8" from="-10 10 2 " power="0.9" type="point" lightRadius="0.5"/>
   <material name="red" diffuse="1 0 0" specular="0.5 0.5 0.5" hardness="50"/>
   <material name="green" diffuse="0 1 0" specular="0.5 0.5 0.5" hardness="16" />
   <material name="blue" diffuse="0 0 1" specular="0.5 0.5 0.5" hardness="16"></material>
-  <material name="black" diffuse="0 0 0" specular="0 0 0" hardness="0" />
+  <material name="black" diffuse="0 0 0" specular="0 0 0" hardness="0" ></material>
   <material name="white" diffuse="0.2 0.2 0.2" specular="0.8 0.8 0.8"
   	hardness="16" reflectable="true">
   </material>
   <material name="mirror" diffuse="0 0 0" specular="1 1 1" reflectable="true"></material>
-  <material name="glass" diffuse="0.3 0 0" specular="1 1 1" refractable="1.5"></material>
+  <material name="glass" diffuse="0 0 0" specular="1 1 1" refractable="1.5"></material>
 
   <!-- render configuration -->
   <render bgcolor="0 0 0" output="TwoSpheresPlane.png" samples="5" >
-    <camera name="myCamera" from="0 4 6" to="-1 1.1 0.5" up="0 1 0"
+    <camera name="myCamera" from="0 4 6" to="0 1 0" up="0 1 0"
     	fovy="45" width="640" height="480"/>
   </render> 
   

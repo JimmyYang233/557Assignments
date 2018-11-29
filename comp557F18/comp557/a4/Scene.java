@@ -113,7 +113,7 @@ public class Scene {
 		                		newV.x = fir.p.x-light.from.x;
 		                		newV.y = fir.p.y-light.from.y;
 		                		newV.z = fir.p.y-light.from.z;
-		                		Ray lightRay = new Ray(light.from, newV);
+		                		Ray lightRay = new Ray(light.from, newV,0);
 		                		Color4f l = computeShading(light, lightRay, ray, fir);
 			            		lx += l.x;
 			                	ly += l.y;
@@ -253,7 +253,7 @@ public class Scene {
 	public static boolean inShadow(final IntersectResult result, final Light light, final List<Intersectable> sl, IntersectResult shadowResult, Ray shadowRay) {
 		
 		// TODO: Objective 5: check for shdows and use it in your lighting computation
-		shadowRay = new Ray(result.p, new Vector3d(light.from.x-result.p.x, light.from.y-result.p.y, light.from.z-result.p.z));
+		shadowRay = new Ray(result.p, new Vector3d(light.from.x-result.p.x, light.from.y-result.p.y, light.from.z-result.p.z), 0);
 		Point3d p = shadowRay.eyePoint;
 		Vector3d d = shadowRay.viewDirection;
 		Point3d finalP = new Point3d(p.x+0.0001*d.x, p.y+0.0001*d.y, p.z+0.0001*d.z);
@@ -368,8 +368,8 @@ public class Scene {
 				newV.x = fir.p.x-light.from.x;
 				newV.y = fir.p.y-light.from.y;
 				newV.z = fir.p.y-light.from.z;
-				Ray lightRay = new Ray(light.from, newV);
-				Ray newRay = new Ray(ray.eyePoint, new Vector3d(fir.p.x-ray.eyePoint.x, fir.p.y-ray.eyePoint.y, fir.p.z-ray.eyePoint.z));
+				Ray lightRay = new Ray(light.from, newV, 0);
+				//Ray newRay = new Ray(ray.eyePoint, new Vector3d(fir.p.x-ray.eyePoint.x, fir.p.y-ray.eyePoint.y, fir.p.z-ray.eyePoint.z));
 				ans = computeShading(light, lightRay, reflectRay, fir);
 				//ans = fir.material.diffuse;
 				ans.x = ans.x*ir.material.specular.x;
@@ -385,41 +385,46 @@ public class Scene {
 		//System.out.println(ir.p);
 		double n1 = ray.n1;
 		double n2 = 1;
+		Vector3d n = new Vector3d(ir.n.x, ir.n.y, ir.n.z);
+		Vector3d negN = new Vector3d(-ir.n.x, -ir.n.y, -ir.n.z);
+		Vector3d nn;
 		if(n1==1) {
+			//ray outside of object;
 			n2 = ir.material.refractableN;
+			nn = new Vector3d(negN.x, negN.y, negN.z);
+		}
+		else {
+			//ray inside of object;
+			nn = new Vector3d(n.x, n.y, n.z);
 		}
 		//System.out.println(ir.n);
-		Vector3d n = ir.n;
+		
 		Vector3d I = ray.viewDirection;
 		//System.out.println(I +", "  + n);
-		Vector3d u = new Vector3d(-I.x, -I.y, -I.z);
-		double angle = u.angle(n);
-		double nn = n1/n2;
-		System.out.println(u + ", " + angle);
-		if(angle>Math.PI/2) {
-			//System.out.println("Angle bigger" + nn);
-			//angle = Math.PI/2;
-		}		
-		//System.out.println(n1 + ", " + n2);
-		double c1 = n.dot(I);
-		double k = 1-nn*nn*(1-Math.cos(angle)*Math.cos(angle));
+		double cos1 = nn.dot(I);
+//		if(cos1<0) {
+//			cos1 = -cos1;
+//		}
+		double angle = Math.acos(cos1);
+		double r = n1/n2;
+		double k = 1-r*r*(1-cos1*cos1);
 		if(k<=0) {
-			System.out.println("was here");
 			ans = mirrorReflection(light, surfaceList, ir, ray);
 		}
 		else {
 			double c2 = Math.sqrt(k);
-			Vector3d T = new Vector3d(nn*I.x+(nn*c1-c2)*n.x, nn*I.y+(nn*c1-c2)*n.y, nn*I.z+(nn*c1-c2)*n.z);
+			Vector3d T = new Vector3d(r*I.x+(r*cos1-c2)*-nn.x, r*I.y+(r*cos1-c2)*-nn.y, r*I.z+(r*cos1-c2)*-nn.z);
 			Point3d finalP = new Point3d(ir.p.x+0.0001*T.x, ir.p.y+0.0001*T.y, ir.p.z+0.0001*T.z);
-			n.negate();
-			double newAngle = n.angle(T);
+			//nn.negate();
+			double cos2 = nn.dot(T);
+			double newAngle = Math.acos(cos2);
 			double FR = fresnelEquation(n1, n2, angle, newAngle);
 			double FT = 1-FR;
-			Color4f ans1 = mirrorReflection(light, surfaceList, ir, ray);
-			ans.x += (float) (ans1.x*ir.material.specular.x*FR);
-			ans.y += (float) (ans1.y*ir.material.specular.y*FR);
-			ans.z += (float) (ans1.z*ir.material.specular.z*FR);
-			Ray refractRay = new Ray(finalP, T);
+//			Color4f ans1 = mirrorReflection(light, surfaceList, ir, ray);
+//			ans.x += (float) (ans1.x*ir.material.specular.x*FR);
+//			ans.y += (float) (ans1.y*ir.material.specular.y*FR);
+//			ans.z += (float) (ans1.z*ir.material.specular.z*FR);
+			Ray refractRay = new Ray(finalP, T, n2);
 			IntersectResult firT = new IntersectResult();
 			for(Intersectable intersectable : surfaceList) {
 				IntersectResult rirT = new IntersectResult();
@@ -435,13 +440,13 @@ public class Scene {
 				newV.x = firT.p.x-light.from.x;
 				newV.y = firT.p.y-light.from.y;
 				newV.z = firT.p.y-light.from.z;
-				Ray lightRay = new Ray(light.from, newV);
+				Ray lightRay = new Ray(light.from, newV, 0);
 				//Ray newRay = 
 				Color4f tmpans = computeShading(light, lightRay, refractRay, firT);
 				//ans = fir.material.diffuse;
-				ans.x += (float) (tmpans.x*ir.material.specular.x*FT);
-				ans.y += (float) (tmpans.y*ir.material.specular.y*FT);
-				ans.z += (float) (tmpans.z*ir.material.specular.z*FT);
+				ans.x += (float) (tmpans.x*ir.material.specular.x);
+				ans.y += (float) (tmpans.y*ir.material.specular.y);
+				ans.z += (float) (tmpans.z*ir.material.specular.z);
 			}
 		}
 		return ans;
@@ -458,7 +463,7 @@ public class Scene {
 		Vector3d nn2v = new Vector3d(nn2.m00*v.x+nn2.m01*v.y+nn2.m02*v.z, nn2.m10*v.x+nn2.m11*v.y+nn2.m12*v.z, nn2.m20*v.x+nn2.m21*v.y+nn2.m22*v.z);
 		Vector3d r = new Vector3d(nn2v.x-v.x, nn2v.y-v.y, nn2v.z-v.z);
 		Point3d finalP = new Point3d(ir.p.x+0.00000001*r.x, ir.p.y+0.00000001*r.y, ir.p.z+0.00000001*r.z);
-		Ray reflectRay = new Ray(finalP, r);
+		Ray reflectRay = new Ray(finalP, r, ray.n1);
 		return reflectRay;
 	}
 	
@@ -468,8 +473,8 @@ public class Scene {
 		double Fr2 = Math.pow((n1*Math.cos(angle2)-n2*Math.cos(angle1))/(n1*Math.cos(angle2)+n2*Math.cos(angle1)), 2);
 		ans = (Fr1+Fr2)/2;
 		if(ans>1) {
-			//System.out.println(ans);
-			//System.out.println(angle1 +", " + angle2);
+			System.out.println(ans);
+			System.out.println(angle1 +", " + angle2);
 			ans = 1;
 		}
 		//System.out.println(ans);

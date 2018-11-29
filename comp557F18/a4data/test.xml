@@ -27,7 +27,7 @@
 	  <plane coeff="0 1 0 0">
 	  	<material ref="white"></material>
 	  	<material2 ref="white"></material2></plane>
-  	<box min="-3 0 3" max="-0.2 10 2">
+  	<box min="-3 0 2" max="-0.2 10 3">
   		<material ref="glass"></material></box>
   </node>
   

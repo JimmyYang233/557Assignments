@@ -84,7 +84,7 @@ public class SceneNode extends Intersectable {
     	ray.viewDirection = newd;
     	for(Intersectable intersectable : children) {
     		IntersectResult ir = new IntersectResult(); 
-    		Ray newRay = new Ray(ray.eyePoint, ray.viewDirection);
+    		Ray newRay = new Ray(ray.eyePoint, ray.viewDirection, 1);
     		intersectable.intersect(newRay, ir);
     		if(ir.material!=null) {
     			if(ir.t<result.t) {

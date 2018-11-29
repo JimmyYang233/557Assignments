@@ -61,15 +61,7 @@ public class Sphere extends Intersectable {
     		if(result.t<0) {
     			result.material = null;
     		}
-    		//compute p
-    		result.p.x = o.x + result.t*l.x;
-    		result.p.y = o.y + result.t*l.y;
-    		result.p.z = o.z + result.t*l.z;
-    		//compute n
-    		result.n.x = result.p.x-center.x;
-    		result.n.y = result.p.y-center.y;
-    		result.n.z = result.p.z-center.z;
-    		result.n.normalize();
+    		
     	}
     	
     	else if(triangle>0) {
@@ -85,44 +77,25 @@ public class Sphere extends Intersectable {
     			else {
     				result.t = t2;
     			}
-    			//compute p
-        		result.p.x = o.x + result.t*l.x;
-        		result.p.y = o.y + result.t*l.y;
-        		result.p.z = o.z + result.t*l.z;
-        		//compute n
-    			result.n.x = result.p.x-center.x;
-        		result.n.y = result.p.y-center.y;
-        		result.n.z = result.p.z-center.z;
-        		result.n.normalize();
     		}
     		else if(t1<=0&&t2>0) {
     			result.t = t2;
-    			//compute p
-        		result.p.x = o.x + result.t*l.x;
-        		result.p.y = o.y + result.t*l.y;
-        		result.p.z = o.z + result.t*l.z;
-        		//compute n
-    			result.n.x = -result.p.x+center.x;
-        		result.n.y = -result.p.y+center.y;
-        		result.n.z = -result.p.z+center.z;
-        		result.n.normalize();
     		}
     		else if(t1>0&&t2<=0) {
     			result.t = t1;
-    			//compute p
-        		result.p.x = o.x + result.t*l.x;
-        		result.p.y = o.y + result.t*l.y;
-        		result.p.z = o.z + result.t*l.z;
-        		//compute n
-    			result.n.x = -result.p.x+center.x;
-        		result.n.y = -result.p.y+center.y;
-        		result.n.z = -result.p.z+center.z;
-        		result.n.normalize();
     		}
     		else {
     			result.material = null;
     		}
-    		
+    		//compute p
+    		result.p.x = o.x + result.t*l.x;
+    		result.p.y = o.y + result.t*l.y;
+    		result.p.z = o.z + result.t*l.z;
+    		//compute n
+    		result.n.x = result.p.x-center.x;
+    		result.n.y = result.p.y-center.y;
+    		result.n.z = result.p.z-center.z;
+    		result.n.normalize();
     		
     		
     	}
