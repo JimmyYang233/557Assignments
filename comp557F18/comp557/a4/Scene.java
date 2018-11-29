@@ -62,10 +62,10 @@ public class Scene {
             	for(int k = 0; k<render.samples;k++) {
             		for(int m = 0;m<render.samples;m++) {
             			//ANTI-Aliasing;
-            			for(int q = 0; q<10; q++) {
+            			for(int q = 0; q<15; q++) {
             				//Depth Of field
             				Point2d p = new Point2d();
-            				disk.get(p, q, 10);
+            				disk.get(p, q, 15);
             				double x = p.x*0.07;
             				double y = p.y*0.07;
             				//System.out.println(x + ", " + y);
@@ -117,9 +117,9 @@ public class Scene {
             	
                 
             	// TODO: Objective 8: do antialiasing by sampling more than one ray per pixel
-            	finalr = finalr/(render.samples*render.samples*10);
-            	finalg = finalg/(render.samples*render.samples*10);
-            	finalb = finalb/(render.samples*render.samples*10);
+            	finalr = finalr/(render.samples*render.samples*15);
+            	finalg = finalg/(render.samples*render.samples*15);
+            	finalb = finalb/(render.samples*render.samples*15);
             	
                 int argb = (finala<<24 | finalr<<16 | finalg<<8 | finalb);    
                 
