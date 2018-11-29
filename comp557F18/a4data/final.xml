@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <scene ambient="0.2 0.2 0.2">
   <!-- define camera,material,lights here -->
-  <light name="myLight" color="0.8 0.8 0.8" from="10 5 10 " power="0.6" type="point" lightRadius="0.5"/>
-  <light name="myLight2" color="0.8 0.8 0.8" from="-10 10 2 " power="0.9" type="point" lightRadius="0.5"/>
+  <light name="myLight" color="0.8 0.8 0.8" from="10 5 10 " power="0.6" type="area" lightRadius="0.5"/>
+  <light name="myLight2" color="0.8 0.8 0.8" from="-10 10 2 " power="0.9" type="area" lightRadius="0.5"/>
   <material name="red" diffuse="1 0 0" specular="0.5 0.5 0.5" hardness="50"/>
   <material name="green" diffuse="0 1 0" specular="0.5 0.5 0.5" hardness="16" />
   <material name="blue" diffuse="0 0 1" specular="0.5 0.5 0.5" hardness="16"></material>
@@ -15,12 +15,14 @@
 
   <!-- render configuration -->
   <render bgcolor="0 0 0" output="TwoSpheresPlane.png" samples="5" >
-    <camera name="myCamera" from="0 4 6" to="0 1 0" up="0 1 0"
-    	fovy="45" width="640" height="480"/>
+    <camera name="myCamera" from="0 4 6" to="-1 1.1 1.6" up="0 1 0"
+    	fovy="45" width="640" height="480" depthOfField="0.04"/>
   </render> 
   
   <!-- scene objects -->
   <node name="root" >
+	  <sphere center="-3 0.8 -1.5" radius="0.8">
+	  	<material ref="glass"></material></sphere>
 	  <sphere center="-1 1.1 0.5" radius="1.1" >
 		<material ref="glass" />
 	  </sphere>
@@ -35,6 +37,7 @@
 	  	<material ref="blue"></material></box></node>
   	<box min="-5 0 -5" max="5 10 -5">
   		<material ref="mirror"></material></box>
+  	
   </node>
   
 </scene>

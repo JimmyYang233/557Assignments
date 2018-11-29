@@ -341,7 +341,7 @@ public class Scene {
 	
 	public Color4f mirrorReflection(Light light, List<Intersectable> surfaceList, IntersectResult ir, Ray ray) {
 		Color4f ans = new Color4f();
-		if(ir.material.numOfReflect>5) {
+		if(ir.material.numOfReflect>3) {
 			ans.x = ir.material.diffuse.x;
 			ans.y = ir.material.diffuse.y;
 			ans.z = ir.material.diffuse.z;
@@ -409,6 +409,7 @@ public class Scene {
 		double r = n1/n2;
 		double k = 1-r*r*(1-cos1*cos1);
 		if(k<=0) {
+			System.out.println("was here");
 			ans = mirrorReflection(light, surfaceList, ir, ray);
 		}
 		else {
@@ -420,10 +421,10 @@ public class Scene {
 			double newAngle = Math.acos(cos2);
 			double FR = fresnelEquation(n1, n2, angle, newAngle);
 			double FT = 1-FR;
-//			Color4f ans1 = mirrorReflection(light, surfaceList, ir, ray);
-//			ans.x += (float) (ans1.x*ir.material.specular.x*FR);
-//			ans.y += (float) (ans1.y*ir.material.specular.y*FR);
-//			ans.z += (float) (ans1.z*ir.material.specular.z*FR);
+			Color4f ans1 = mirrorReflection(light, surfaceList, ir, ray);
+			ans.x += (float) (ans1.x*ir.material.specular.x*FR);
+			ans.y += (float) (ans1.y*ir.material.specular.y*FR);
+			ans.z += (float) (ans1.z*ir.material.specular.z*FR);
 			Ray refractRay = new Ray(finalP, T, n2);
 			IntersectResult firT = new IntersectResult();
 			for(Intersectable intersectable : surfaceList) {
@@ -444,9 +445,9 @@ public class Scene {
 				//Ray newRay = 
 				Color4f tmpans = computeShading(light, lightRay, refractRay, firT);
 				//ans = fir.material.diffuse;
-				ans.x += (float) (tmpans.x*ir.material.specular.x);
-				ans.y += (float) (tmpans.y*ir.material.specular.y);
-				ans.z += (float) (tmpans.z*ir.material.specular.z);
+				ans.x += (float) (tmpans.x*ir.material.specular.x*FT);
+				ans.y += (float) (tmpans.y*ir.material.specular.y*FT);
+				ans.z += (float) (tmpans.z*ir.material.specular.z*FT);
 			}
 		}
 		return ans;

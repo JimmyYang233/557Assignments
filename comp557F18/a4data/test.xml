@@ -15,7 +15,7 @@
 
   <!-- render configuration -->
   <render bgcolor="0 0 0" output="TwoSpheresPlane.png" samples="1" >
-    <camera name="myCamera" from="0 3 5" to="0 1.1 0" up="0 1 0" fovy="45" width="640" height="480" />
+    <camera name="myCamera" from="0 3 5" to="0 1.1 0" up="0 1 0" fovy="45" width="640" height="480"/>
   </render> 
   
   <!-- scene objects -->
