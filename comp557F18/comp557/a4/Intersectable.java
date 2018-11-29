@@ -1,5 +1,7 @@
 package comp557.a4;
 
+import javax.vecmath.Point3d;
+
 /**
  * Abstract class for an intersectable surface 
  */
@@ -7,6 +9,10 @@ public abstract class Intersectable {
 	
 	/** Material for this intersectable surface */
 	public Material material;
+	
+	public boolean movable = false;
+	
+	public Point3d distancePerFrame = new Point3d(0,0,0);
 	
 	/** 
 	 * Default constructor, creates the default material for the surface

@@ -53,6 +53,7 @@ public class Parser {
         		scene.surfaceList.add( box );
             } else if ( nodeName.equalsIgnoreCase( "sphere" ) ) {
         		Sphere sphere = Parser.createSphere(n);
+        		System.out.println(sphere.movable);
         		scene.surfaceList.add( sphere );
             } else if ( nodeName.equalsIgnoreCase( "mesh" ) ) {
             	Mesh mesh = Parser.createMesh(n);
@@ -373,6 +374,17 @@ public class Parser {
 		Node radiusAttr = dataNode.getAttributes().getNamedItem("radius");
 		if ( radiusAttr != null ) {
 			sphere.radius = Double.parseDouble( radiusAttr.getNodeValue() );
+		}
+		Node movableAttr = dataNode.getAttributes().getNamedItem("movable");
+		if(movableAttr!=null) {
+			//System.out.println("Was here");
+			sphere.movable =  true;
+			//System.out.println(sphere.movable);
+			Scanner s = new Scanner(movableAttr.getNodeValue());
+			double x= s.nextDouble();
+			double y = s.nextDouble();
+			double z = s.nextDouble();
+			sphere.distancePerFrame = new Point3d(x, y, z);
 		}
 		sphere.material = parseMaterial(dataNode, "material");	
     	return sphere;

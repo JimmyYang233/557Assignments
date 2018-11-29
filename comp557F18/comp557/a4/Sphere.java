@@ -14,6 +14,8 @@ public class Sphere extends Intersectable {
     
 	/** Location of the sphere center. */
 	public Point3d center = new Point3d( 0, 0, 0 );
+	
+	
     
     /**
      * Default constructor
@@ -29,7 +31,7 @@ public class Sphere extends Intersectable {
      * @param center
      * @param material
      */
-    public Sphere( double radius, Point3d center, Material material ) {
+    public Sphere( double radius, Point3d center, Material material, boolean movable) {
     	super();
     	this.radius = radius;
     	this.center = center;

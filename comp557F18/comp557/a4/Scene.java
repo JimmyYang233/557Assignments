@@ -48,7 +48,7 @@ public class Scene {
         
         FastPoissonDisk disk = new FastPoissonDisk(0.05);
         FastPoissonDisk lightDisk = new FastPoissonDisk(0.05);
-        
+		int NN = 0;
         for ( int i = 0; i < h && !render.isDone(); i++ ) {
             for ( int j = 0; j < w && !render.isDone(); j++ ) {
             	
@@ -62,7 +62,7 @@ public class Scene {
             	//render.samples = 1;            	
             	for(int k = 0; k<render.samples;k++) {
             		for(int m = 0;m<render.samples;m++) {
-            			//ANTI-Aliasing;
+        				//ANTI-Aliasing;
         				//Depth Of field
             			double x = 0;
             			double y = 0;
@@ -84,6 +84,7 @@ public class Scene {
 		            	IntersectResult fir = new IntersectResult();
 		                //System.out.println(surfaceList.size());
 		            	for(Intersectable intersectable : surfaceList) {
+		            		//System.out.println(intersectable.movable);
 		            		IntersectResult ir = new IntersectResult();
 		            		intersectable.intersect(ray, ir);
 		            		if(ir.t<=fir.t) {
@@ -171,7 +172,8 @@ public class Scene {
 		//System.out.println(offseti + ", "+ offsetj);
 		Point3d e = new Point3d(cam.from.x+x, cam.from.y+y, cam.from.z);
 		//System.out.println(e);
-		double d = e.z;
+		Vector3d dd = new Vector3d(cam.to.x-e.x, cam.to.y-e.y, cam.to.z-e.z);
+		double d = Math.sqrt(dd.x*dd.x+dd.y*dd.y+dd.z*dd.z);
 		double angle = cam.fovy*Math.PI/180;
 		double t = d*Math.tan(angle/2);
 		double b = -t;

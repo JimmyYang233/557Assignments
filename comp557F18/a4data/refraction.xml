@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <scene ambient="0.2 0.2 0.2">
   <!-- define camera,material,lights here -->
-  <light name="myLight" color="0.8 0.8 0.8" from="10 5 10 " power="0.6" type="point" />
-  <light name="myLight2" color="0.8 0.8 0.8" from="-10 10 2 " power="0.9" type="point" />
+  <light name="myLight" color="0.8 0.8 0.8" from="10 5 10 " power="0.6" type="area" />
+  <light name="myLight2" color="0.8 0.8 0.8" from="-10 10 2 " power="0.9" type="point" ></light>
   <material name="red" diffuse="1 0 0" specular="0.5 0.5 0.5" hardness="50"/>
   <material name="green" diffuse="0 1 0" specular="0.5 0.5 0.5" hardness="16" />
   <material name="blue" diffuse="0 0 1" specular="0.5 0.5 0.5" hardness="16"></material>
@@ -14,7 +14,7 @@
   <material name="glass" diffuse="0 0 0" specular="1 1 1" refractable="1.5"></material>
 
   <!-- render configuration -->
-  <render bgcolor="0 0 0" output="TwoSpheresPlane.png" samples="1" >
+  <render bgcolor="0 0 0" output="OneSphereRefraction.png" samples="1" >
     <camera name="myCamera" from="0 3 5" to="0 1.1 0" up="0 1 0" fovy="45" width="640" height="480"/>
   </render> 
   
