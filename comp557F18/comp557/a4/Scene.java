@@ -295,7 +295,7 @@ public class Scene {
 	
 	
 	public Color4f lambertianShading(Light light,Ray lightRay, IntersectResult ir) {
-    	Vector3d n = ir.n;
+    	Vector3d n = new Vector3d(ir.n.x, ir.n.y, ir.n.z);
     	//System.out.println(n);
 		Vector3d l = new Vector3d();
 		l.x = -lightRay.viewDirection.x;
@@ -357,9 +357,9 @@ public class Scene {
 	
 	public Color4f ambientShading(IntersectResult ir) {
 		Color4f result = new Color4f();
-		result.x = (float) (ir.material.diffuse.x*ambient.x*0.05);
-		result.y = (float) (ir.material.diffuse.y*ambient.y*0.05);
-		result.z = (float) (ir.material.diffuse.z*ambient.z*0.05);
+		result.x = (float) (ir.material.diffuse.x*ambient.x*0.2);
+		result.y = (float) (ir.material.diffuse.y*ambient.y*0.2);
+		result.z = (float) (ir.material.diffuse.z*ambient.z*0.2);
 		return result;
 	}
 	

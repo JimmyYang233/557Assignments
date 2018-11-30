@@ -11,10 +11,10 @@
   	hardness="16" reflectable="true">
   </material>
   <material name="mirror" diffuse="0 0 0" specular="1 1 1" reflectable="true"></material>
-  <material name="diamond" diffuse="0 0 0" specular="1 1 1" refractable="1.5"></material>
+  <material name="glass" diffuse="0 0 0" specular="1 1 1" refractable="1.5"></material>
 
   <!-- render configuration -->
-  <render bgcolor="0 0 0" output="fresnel.png" samples="3" >
+  <render bgcolor="0 0 0" output="fresnelGlass.png" samples="3" >
     <camera name="myCamera" from="0 4 6" to="2 1.1 1.6" up="0 1 0"
     	fovy="45" width="640" height="480"/>
   </render> 
@@ -23,7 +23,7 @@
   <node name="root" >
 	  
 	  <sphere center="-1 1.1 0.5" radius="1.1" movable="0.07 0 0.1">
-		<material ref="diamond" />
+		<material ref="glass" />
 	  </sphere><node name="meshStack" translation="1.2 1 1.2">
 	  	<mesh name="mesh" filename="comp557F18/a4data/mesh.obj">
 	  		<material ref="green"></material></mesh></node>

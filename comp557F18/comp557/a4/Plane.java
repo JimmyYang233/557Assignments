@@ -32,6 +32,9 @@ public class Plane extends Intersectable {
     public void intersect( Ray ray, IntersectResult result ) {
     
         // TODO: Objective 4: intersection of ray with plane
+    	if(material2==null) {
+    		material2 = this.material;
+    	}
     	Point3d l0 = ray.eyePoint;
     	Vector3d l = ray.viewDirection;
     	Point3d p0 = new Point3d(0,0,0);

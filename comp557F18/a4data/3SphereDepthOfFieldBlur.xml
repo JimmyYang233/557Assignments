@@ -11,7 +11,7 @@
   <material name="white" diffuse="0.3 0.3 0.3" specular="0.7 0.7 0.7" hardness="0" reflectable="true"></material>
   
   <!-- render configuration -->
-  <render bgcolor="0.53 0.80 0.99" output="5SphereDepthOfField.png" samples="5" >
+  <render bgcolor="0.53 0.80 0.99" output="5SphereDepthOfField.png" samples="6" >
     <camera name="myCamera" from="0 3 8" to="0 0.5 0" up="0 1 0" fovy="45" width="640" height="480" depthOfField="0.06"/>
   </render> 
   

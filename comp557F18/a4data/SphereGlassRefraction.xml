@@ -14,7 +14,7 @@
   <material name="glass" diffuse="0 0 0" specular="1 1 1" refractable="1.5"></material>
 
   <!-- render configuration -->
-  <render bgcolor="0 0 0" output="OneSphereRefraction.png" samples="1" >
+  <render bgcolor="0 0 0" output="OneSphereGlassRefraction.png" samples="1" >
     <camera name="myCamera" from="0 3 5" to="0 1.1 0" up="0 1 0" fovy="45" width="640" height="480"/>
   </render> 
   
